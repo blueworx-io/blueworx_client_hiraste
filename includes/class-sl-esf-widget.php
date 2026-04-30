@@ -71,9 +71,13 @@ class SL_ESF_Widget extends Widget_Base {
 		$uid = 'sl-esf-' . $this->get_id();
 		$action = trim( (string) $settings['form_action'] );
 
-		$max_units = (int) $settings['max_units'];
+		$max_units = max( 1, min( (int) $settings['max_units'], 20 ) );
 		$default_units = max( 1, min( (int) $settings['default_units'], $max_units ) );
 		$default_guests = max( 1, min( (int) $settings['default_guests'], 50 ) );
+		$destination_placeholder = trim( (string) $settings['placeholder_destination'] );
+		if ( $destination_placeholder === '' ) {
+			$destination_placeholder = __( 'All destinations', 'sl-elementor-search-form' );
+		}
 
 		$dest_terms = get_terms([
 			'taxonomy' => 'destinations',
@@ -95,7 +99,7 @@ class SL_ESF_Widget extends Widget_Base {
 					<div class="sl-esf__field sl-esf__field--select sl-esf__field--destination">
 						<label class="sl-esf__label" for="<?php echo esc_attr( $uid ); ?>-destination-term">Destination</label>
 						<select id="<?php echo esc_attr( $uid ); ?>-destination-term" class="sl-esf__select" name="destination_term">
-							<option value="">All destinations</option>
+							<option value=""><?php echo esc_html( $destination_placeholder ); ?></option>
 							<?php foreach ( $dest_terms as $t ) : ?>
 								<option value="<?php echo esc_attr( $t->term_id ); ?>"><?php echo esc_html( $t->name ); ?></option>
 							<?php endforeach; ?>
@@ -118,7 +122,7 @@ class SL_ESF_Widget extends Widget_Base {
 						<label class="sl-esf__label" for="<?php echo esc_attr( $uid ); ?>-units">Units</label>
 						<select id="<?php echo esc_attr( $uid ); ?>-units" class="sl-esf__select" name="units">
 							<option value="">Any Units</option>
-							<?php for ( $i=1; $i<=20; $i++ ) : ?>
+							<?php for ( $i=1; $i<=$max_units; $i++ ) : ?>
 								<option value="<?php echo esc_attr( $i ); ?>" <?php selected( $i, $default_units ); ?>>
 									<?php echo esc_html( $i . ( $i === 1 ? ' Unit' : ' Units' ) ); ?>
 								</option>
