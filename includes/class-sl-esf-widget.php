@@ -7,7 +7,7 @@ use Elementor\Controls_Manager;
 class SL_ESF_Widget extends Widget_Base {
 
 	public function get_name() { return 'sl_esf_search_form'; }
-	public function get_title() { return __( 'Search Form', 'blueworx_hiraste_enhancements' ); }
+	public function get_title() { return __( 'Search Form', 'blueworx-hiraste-enhancements' ); }
 	public function get_icon() { return 'eicon-search'; }
 	public function get_categories() { return [ 'general' ]; }
 	public function get_script_depends() { return [ 'sl-esf-frontend' ]; }
@@ -16,49 +16,49 @@ class SL_ESF_Widget extends Widget_Base {
 	protected function register_controls() {
 		$this->start_controls_section(
 			'section_content',
-			[ 'label' => __( 'Content', 'blueworx_hiraste_enhancements' ), 'tab' => Controls_Manager::TAB_CONTENT ]
+			[ 'label' => __( 'Content', 'blueworx-hiraste-enhancements' ), 'tab' => Controls_Manager::TAB_CONTENT ]
 		);
 
 		$this->add_control(
 			'placeholder_destination',
-			[ 'label' => __( 'Destination Placeholder', 'blueworx_hiraste_enhancements' ), 'type' => Controls_Manager::TEXT,
-			  'default' => __( 'Where would you like to go?', 'blueworx_hiraste_enhancements' ) ]
+			[ 'label' => __( 'Destination Placeholder', 'blueworx-hiraste-enhancements' ), 'type' => Controls_Manager::TEXT,
+			  'default' => __( 'Where would you like to go?', 'blueworx-hiraste-enhancements' ) ]
 		);
 
 		$this->add_control(
 			'search_button_label',
-			[ 'label' => __( 'Button Label', 'blueworx_hiraste_enhancements' ), 'type' => Controls_Manager::TEXT,
-			  'default' => __( 'SEARCH', 'blueworx_hiraste_enhancements' ) ]
+			[ 'label' => __( 'Button Label', 'blueworx-hiraste-enhancements' ), 'type' => Controls_Manager::TEXT,
+			  'default' => __( 'SEARCH', 'blueworx-hiraste-enhancements' ) ]
 		);
 
 		$this->add_control(
 			'max_units',
-			[ 'label' => __( 'Max Units', 'blueworx_hiraste_enhancements' ), 'type' => Controls_Manager::NUMBER,
+			[ 'label' => __( 'Max Units', 'blueworx-hiraste-enhancements' ), 'type' => Controls_Manager::NUMBER,
 			  'min' => 1, 'max' => 20, 'step' => 1, 'default' => 10 ]
 		);
 
 		$this->add_control(
 			'default_units',
-			[ 'label' => __( 'Default Units', 'blueworx_hiraste_enhancements' ), 'type' => Controls_Manager::NUMBER,
+			[ 'label' => __( 'Default Units', 'blueworx-hiraste-enhancements' ), 'type' => Controls_Manager::NUMBER,
 			  'min' => 1, 'max' => 10, 'step' => 1, 'default' => 2 ]
 		);
 
 		$this->add_control(
 			'default_guests',
-			[ 'label' => __( 'Default Guests', 'blueworx_hiraste_enhancements' ), 'type' => Controls_Manager::NUMBER,
+			[ 'label' => __( 'Default Guests', 'blueworx-hiraste-enhancements' ), 'type' => Controls_Manager::NUMBER,
 			  'min' => 1, 'max' => 50, 'step' => 1, 'default' => 4 ]
 		);
 
 		$this->add_control(
 			'advanced_label',
-			[ 'label' => __( 'Advanced Toggle Label', 'blueworx_hiraste_enhancements' ), 'type' => Controls_Manager::TEXT,
-			  'default' => __( 'Advanced Search', 'blueworx_hiraste_enhancements' ) ]
+			[ 'label' => __( 'Advanced Toggle Label', 'blueworx-hiraste-enhancements' ), 'type' => Controls_Manager::TEXT,
+			  'default' => __( 'Advanced Search', 'blueworx-hiraste-enhancements' ) ]
 		);
 
 		$this->add_control(
 			'form_action',
-			[ 'label' => __( 'Form Action', 'blueworx_hiraste_enhancements' ), 'type' => Controls_Manager::TEXT,
-			  'description' => __( 'Typically leave as "/" to use WordPress search results.', 'blueworx_hiraste_enhancements' ),
+			[ 'label' => __( 'Form Action', 'blueworx-hiraste-enhancements' ), 'type' => Controls_Manager::TEXT,
+			  'description' => __( 'Typically leave as "/" to use WordPress search results.', 'blueworx-hiraste-enhancements' ),
 			  'default' => '/' ]
 		);
 
@@ -76,7 +76,7 @@ class SL_ESF_Widget extends Widget_Base {
 		$default_guests = max( 1, min( (int) $settings['default_guests'], 50 ) );
 		$destination_placeholder = trim( (string) $settings['placeholder_destination'] );
 		if ( $destination_placeholder === '' ) {
-			$destination_placeholder = __( 'All destinations', 'blueworx_hiraste_enhancements' );
+			$destination_placeholder = __( 'All destinations', 'blueworx-hiraste-enhancements' );
 		}
 
 		$dest_terms = get_terms([

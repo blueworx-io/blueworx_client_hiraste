@@ -2,9 +2,9 @@
 Contributors: blueworx
 Tags: elementor, search, property, filters
 Requires at least: 6.0
-Tested up to: 6.5
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.2.8
+Stable tag: 0.2.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,6 +29,11 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.2.9 =
+* Updated text domain format to use hyphens.
+* Updated tested WordPress version.
+* Cleaned search form request handling for plugin checker compliance.
 
 = 0.2.8 =
 * Added WordPress.org plugin header details.
