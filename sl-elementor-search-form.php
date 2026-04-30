@@ -2,14 +2,18 @@
 /**
  * Plugin Name: BlueWorx Hiraste Enhancements
  * Description: Adds an Elementor widget that renders a dynamic search form UI and filters Elementor/WordPress search results for Properties.
- * Version: 0.2.7
+ * Version: 0.2.8
  * Author: ChatGPT
- * Text Domain: sl-elementor-search-form
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Requires at least: 6.0
+ * Requires PHP: 7.4
+ * Text Domain: blueworx_hiraste_enhancements
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SL_ESF_VERSION', '0.2.7' );
+define( 'SL_ESF_VERSION', '0.2.8' );
 define( 'SL_ESF_PLUGIN_FILE', __FILE__ );
 define( 'SL_ESF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SL_ESF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -51,8 +55,8 @@ final class SL_ESF_Plugin {
 
 	public function register_admin_page() {
 		add_options_page(
-			__( 'Active Enhancements', 'sl-elementor-search-form' ),
-			__( 'Active Enhancements', 'sl-elementor-search-form' ),
+			__( 'Active Enhancements', 'blueworx_hiraste_enhancements' ),
+			__( 'Active Enhancements', 'blueworx_hiraste_enhancements' ),
 			'manage_options',
 			'sl-esf-active-enhancements',
 			[ $this, 'render_admin_page' ]
@@ -62,30 +66,30 @@ final class SL_ESF_Plugin {
 	public function render_admin_page() {
 		$features = [
 			[
-				'title' => __( 'Elementor Property Search Form', 'sl-elementor-search-form' ),
-				'body'  => __( 'Adds an Elementor widget for property search with destination, guests, units, and advanced filters.', 'sl-elementor-search-form' ),
+				'title' => __( 'Elementor Property Search Form', 'blueworx_hiraste_enhancements' ),
+				'body'  => __( 'Adds an Elementor widget for property search with destination, guests, units, and advanced filters.', 'blueworx_hiraste_enhancements' ),
 			],
 			[
-				'title' => __( 'Destination, Collection, and Amenity Filters', 'sl-elementor-search-form' ),
-				'body'  => __( 'Connects selected destinations, collections, and amenities to WordPress property search results.', 'sl-elementor-search-form' ),
+				'title' => __( 'Destination, Collection, and Amenity Filters', 'blueworx_hiraste_enhancements' ),
+				'body'  => __( 'Connects selected destinations, collections, and amenities to WordPress property search results.', 'blueworx_hiraste_enhancements' ),
 			],
 			[
-				'title' => __( 'Guest Capacity Filtering', 'sl-elementor-search-form' ),
-				'body'  => __( 'Filters properties by the total guest capacity of their assigned units.', 'sl-elementor-search-form' ),
+				'title' => __( 'Guest Capacity Filtering', 'blueworx_hiraste_enhancements' ),
+				'body'  => __( 'Filters properties by the total guest capacity of their assigned units.', 'blueworx_hiraste_enhancements' ),
 			],
 			[
-				'title' => __( 'Multi-Unit Search Matching', 'sl-elementor-search-form' ),
-				'body'  => __( 'Checks each selected unit requirement against assigned property units before WordPress paginates results.', 'sl-elementor-search-form' ),
+				'title' => __( 'Multi-Unit Search Matching', 'blueworx_hiraste_enhancements' ),
+				'body'  => __( 'Checks each selected unit requirement against assigned property units before WordPress paginates results.', 'blueworx_hiraste_enhancements' ),
 			],
 			[
-				'title' => __( 'Search Asset Loading', 'sl-elementor-search-form' ),
-				'body'  => __( 'Loads the frontend JavaScript and CSS needed by the Elementor search form.', 'sl-elementor-search-form' ),
+				'title' => __( 'Search Asset Loading', 'blueworx_hiraste_enhancements' ),
+				'body'  => __( 'Loads the frontend JavaScript and CSS needed by the Elementor search form.', 'blueworx_hiraste_enhancements' ),
 			],
 		];
 		?>
 		<div class="wrap">
-			<h1><?php echo esc_html__( 'Active Enhancements', 'sl-elementor-search-form' ); ?></h1>
-			<p><?php echo esc_html__( 'These features are currently active in this plugin.', 'sl-elementor-search-form' ); ?></p>
+			<h1><?php echo esc_html__( 'Active Enhancements', 'blueworx_hiraste_enhancements' ); ?></h1>
+			<p><?php echo esc_html__( 'These features are currently active in this plugin.', 'blueworx_hiraste_enhancements' ); ?></p>
 			<div style="display:grid;gap:16px;max-width:1200px;">
 				<?php foreach ( $features as $feature ) : ?>
 					<div style="width:100%;background:#fff;border:1px solid #dcdcde;border-left:4px solid #2271b1;padding:18px 20px;box-sizing:border-box;">
@@ -103,6 +107,54 @@ new SL_ESF_Plugin();
 
 
 // ---- Search integration (properties + units filtering) ----
+
+function blueworx_hiraste_enhancements_has_search_nonce() {
+	if ( ! isset( $_GET['blueworx_hiraste_enhancements_nonce'] ) ) {
+		return false;
+	}
+
+	$nonce = sanitize_text_field( wp_unslash( $_GET['blueworx_hiraste_enhancements_nonce'] ) );
+	return (bool) wp_verify_nonce( $nonce, 'blueworx_hiraste_enhancements_search' );
+}
+
+function blueworx_hiraste_enhancements_get_search_int( $key ) {
+	if ( ! blueworx_hiraste_enhancements_has_search_nonce() || ! isset( $_GET[ $key ] ) ) {
+		return 0;
+	}
+
+	$value = wp_unslash( $_GET[ $key ] );
+	if ( is_array( $value ) ) {
+		return 0;
+	}
+
+	return absint( $value );
+}
+
+function blueworx_hiraste_enhancements_get_search_int_array( $key ) {
+	if ( ! blueworx_hiraste_enhancements_has_search_nonce() || ! isset( $_GET[ $key ] ) ) {
+		return [];
+	}
+
+	$value = wp_unslash( $_GET[ $key ] );
+	if ( ! is_array( $value ) ) {
+		$value = [ $value ];
+	}
+
+	return array_values( array_filter( array_map( 'absint', $value ) ) );
+}
+
+function blueworx_hiraste_enhancements_get_search_text( $key ) {
+	if ( ! blueworx_hiraste_enhancements_has_search_nonce() || ! isset( $_GET[ $key ] ) ) {
+		return '';
+	}
+
+	$value = wp_unslash( $_GET[ $key ] );
+	if ( is_array( $value ) ) {
+		return '';
+	}
+
+	return sanitize_text_field( $value );
+}
 
 function sl_esf_parse_unit_requirements( $unit_boxes ) {
 	$requirements = [];
@@ -213,7 +265,6 @@ function sl_esf_find_matching_property_ids( $requirements, $min_units, $guests )
 		'no_found_rows'          => true,
 		'update_post_meta_cache' => false,
 		'update_post_term_cache' => false,
-		'suppress_filters'       => true,
 	]);
 
 	$matching_ids = [];
@@ -244,9 +295,7 @@ add_action( 'pre_get_posts', function( $q ) {
 	];
 
 	foreach ( $map as $param => $tax ) {
-		$raw = isset( $_GET[ $param ] ) ? $_GET[ $param ] : [];
-		if ( ! is_array( $raw ) ) $raw = [ $raw ];
-		$ids = array_values( array_filter( array_map( 'intval', $raw ) ) );
+		$ids = blueworx_hiraste_enhancements_get_search_int_array( $param );
 		if ( ! empty( $ids ) ) {
 			$tax_clauses[] = [
 				'taxonomy' => $tax,
@@ -258,7 +307,7 @@ add_action( 'pre_get_posts', function( $q ) {
 	}
 
 	// Destination single select (term id) - treated as another OR clause.
-	$dest_single = isset( $_GET['destination_term'] ) ? intval( $_GET['destination_term'] ) : 0;
+	$dest_single = blueworx_hiraste_enhancements_get_search_int( 'destination_term' );
 	if ( $dest_single ) {
 		$tax_clauses[] = [
 			'taxonomy' => 'destinations',
@@ -272,10 +321,10 @@ add_action( 'pre_get_posts', function( $q ) {
 		$q->set( 'tax_query', array_merge( [ 'relation' => 'OR' ], $tax_clauses ) );
 	}
 
-	$raw_unit_boxes = ( isset( $_GET['unit_boxes'] ) && ! is_array( $_GET['unit_boxes'] ) ) ? wp_unslash( $_GET['unit_boxes'] ) : '';
+	$raw_unit_boxes = blueworx_hiraste_enhancements_get_search_text( 'unit_boxes' );
 	$requirements = sl_esf_parse_unit_requirements( $raw_unit_boxes );
-	$min_units = ( isset( $_GET['units'] ) && $_GET['units'] !== '' ) ? max( 1, intval( $_GET['units'] ) ) : 0;
-	$guests = ( isset( $_GET['guests'] ) && $_GET['guests'] !== '' ) ? max( 1, intval( $_GET['guests'] ) ) : 0;
+	$min_units = blueworx_hiraste_enhancements_get_search_int( 'units' );
+	$guests = blueworx_hiraste_enhancements_get_search_int( 'guests' );
 
 	if ( empty( $requirements ) && ! $min_units && ! $guests ) {
 		return;
