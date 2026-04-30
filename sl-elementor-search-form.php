@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: SL Elementor Search Form
+ * Plugin Name: BlueWorx Hiraste Enhancements
  * Description: Adds an Elementor widget that renders a dynamic search form UI and filters Elementor/WordPress search results for Properties.
  * Version: 0.2.7
  * Author: ChatGPT
