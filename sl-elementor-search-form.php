@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: BlueWorx Hiraste Enhancements
- * Description: Adds an Elementor widget that renders a dynamic search form UI and filters Elementor/WordPress search results for Properties.
- * Version: 0.2.9
+ * Description: Adds Elementor widgets for Hiraste property search and filtered property results.
+ * Version: 0.3.0
  * Author: ChatGPT
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SL_ESF_VERSION', '0.2.9' );
+define( 'SL_ESF_VERSION', '0.3.0' );
 define( 'SL_ESF_PLUGIN_FILE', __FILE__ );
 define( 'SL_ESF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SL_ESF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -50,7 +50,10 @@ final class SL_ESF_Plugin {
 		if ( ! did_action( 'elementor/loaded' ) ) return;
 
 		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-widget.php';
+		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-results-widget.php';
+
 		$widgets_manager->register( new \SL_ESF_Widget() );
+		$widgets_manager->register( new \SL_ESF_Results_Widget() );
 	}
 
 	public function register_admin_page() {
@@ -84,6 +87,10 @@ final class SL_ESF_Plugin {
 			[
 				'title' => __( 'Search Asset Loading', 'blueworx-hiraste-enhancements' ),
 				'body'  => __( 'Loads the frontend JavaScript and CSS needed by the Elementor search form.', 'blueworx-hiraste-enhancements' ),
+			],
+			[
+				'title' => __( 'Enhanced Property Results Widget', 'blueworx-hiraste-enhancements' ),
+				'body'  => __( 'Adds an Elementor widget that renders filtered property results using a selected Elementor Loop Item template.', 'blueworx-hiraste-enhancements' ),
 			],
 		];
 		?>

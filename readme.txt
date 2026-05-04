@@ -4,7 +4,7 @@ Tags: elementor, search, property, filters
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.2.9
+Stable tag: 0.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Adds BlueWorx Hiraste property search enhancements for Elementor and WordPress.
 
 == Description ==
 
-BlueWorx Hiraste Enhancements adds an Elementor search widget for property results.
+BlueWorx Hiraste Enhancements adds Elementor widgets for property search and filtered property results.
 
 Current enhancements include:
 
@@ -20,6 +20,7 @@ Current enhancements include:
 * Destination, collection, and amenity filters.
 * Guest capacity filtering.
 * Multi-unit search matching.
+* Enhanced property results widget using an Elementor Loop Item template.
 * Active Enhancements admin information page.
 
 == Installation ==
@@ -29,6 +30,10 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.3.0 =
+* Added Enhanced Property Results Elementor widget.
+* Added grid column, spacing, pagination, and no-results controls.
 
 = 0.2.9 =
 * Updated text domain format to use hyphens.
