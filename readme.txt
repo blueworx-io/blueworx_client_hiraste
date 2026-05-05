@@ -4,7 +4,7 @@ Tags: elementor, search, property, filters
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.3.3
+Stable tag: 0.3.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,7 +21,8 @@ Current enhancements include:
 * Guest capacity filtering.
 * Multi-unit search matching.
 * Enhanced property results widget using an Elementor Loop Item template.
-* Property related items widget for reviews, units, and amenities with grid and carousel layouts.
+* Property related items widget for reviews and units with grid and carousel layouts.
+* Property amenities widget using an Elementor Loop Item template with amenity icons.
 * Active Enhancements admin information page.
 
 == Installation ==
@@ -31,6 +32,33 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.3.10 =
+* Set Property Amenities icon images to 50px by 50px.
+
+= 0.3.9 =
+* Fixed Property Amenities titles inside archive result loop items.
+* Added 10px gap and desktop/tablet left alignment for amenity image boxes.
+
+= 0.3.8 =
+* Added separate desktop, tablet, and mobile column controls with a 4-column option.
+* Added custom amenity image box wrapper class and responsive alignment.
+
+= 0.3.7 =
+* Added an amenities limit setting.
+* Improved amenity icon output when the Elementor image box template has no image markup.
+
+= 0.3.6 =
+* Added amenity icon support from the ACF featured_image field.
+* Added title colour control for amenity image box titles.
+
+= 0.3.5 =
+* Removed amenities from the Property Related Items widget.
+* Added a separate Property Amenities widget for assigned amenities in a loop grid.
+* Updated related item carousels so they auto-rotate even when arrows and dots are hidden.
+
+= 0.3.4 =
+* Updated amenities in the Property Related Items widget to use the selected Elementor template while showing the correct amenity names.
 
 = 0.3.3 =
 * Added grid/carousel layout option to the Property Related Items widget.

@@ -32,7 +32,6 @@ class SL_ESF_Related_Widget extends Widget_Base {
 				'options' => [
 					'reviews'   => __( 'Reviews', 'blueworx-hiraste-enhancements' ),
 					'units'     => __( 'Units', 'blueworx-hiraste-enhancements' ),
-					'amenities' => __( 'Amenities', 'blueworx-hiraste-enhancements' ),
 				],
 				'default' => 'reviews',
 			]
@@ -72,16 +71,47 @@ class SL_ESF_Related_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
-			'columns',
+			'columns_desktop',
 			[
-				'label'   => __( 'Columns', 'blueworx-hiraste-enhancements' ),
+				'label'   => __( 'Desktop Columns', 'blueworx-hiraste-enhancements' ),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
 					'1' => __( '1 Column', 'blueworx-hiraste-enhancements' ),
 					'2' => __( '2 Columns', 'blueworx-hiraste-enhancements' ),
 					'3' => __( '3 Columns', 'blueworx-hiraste-enhancements' ),
+					'4' => __( '4 Columns', 'blueworx-hiraste-enhancements' ),
 				],
 				'default' => '3',
+			]
+		);
+
+		$this->add_control(
+			'columns_tablet',
+			[
+				'label'   => __( 'Tablet Columns', 'blueworx-hiraste-enhancements' ),
+				'type'    => Controls_Manager::SELECT,
+				'options' => [
+					'1' => __( '1 Column', 'blueworx-hiraste-enhancements' ),
+					'2' => __( '2 Columns', 'blueworx-hiraste-enhancements' ),
+					'3' => __( '3 Columns', 'blueworx-hiraste-enhancements' ),
+					'4' => __( '4 Columns', 'blueworx-hiraste-enhancements' ),
+				],
+				'default' => '2',
+			]
+		);
+
+		$this->add_control(
+			'columns_mobile',
+			[
+				'label'   => __( 'Mobile Columns', 'blueworx-hiraste-enhancements' ),
+				'type'    => Controls_Manager::SELECT,
+				'options' => [
+					'1' => __( '1 Column', 'blueworx-hiraste-enhancements' ),
+					'2' => __( '2 Columns', 'blueworx-hiraste-enhancements' ),
+					'3' => __( '3 Columns', 'blueworx-hiraste-enhancements' ),
+					'4' => __( '4 Columns', 'blueworx-hiraste-enhancements' ),
+				],
+				'default' => '1',
 			]
 		);
 
@@ -154,23 +184,23 @@ class SL_ESF_Related_Widget extends Widget_Base {
 		$template_slug = '';
 		$template_id = 0;
 		$layout_type = $this->sanitize_layout_type( $settings['layout_type'] ?? 'grid' );
-		$columns = $this->sanitize_columns( $settings['columns'] ?? '3' );
+		$columns_desktop = $this->sanitize_columns( $settings['columns_desktop'] ?? $settings['columns'] ?? '3', 3 );
+		$columns_tablet = $this->sanitize_columns( $settings['columns_tablet'] ?? '2', 2 );
+		$columns_mobile = $this->sanitize_columns( $settings['columns_mobile'] ?? '1', 1 );
 		$column_gap = $this->sanitize_pixel_value( $settings['column_gap'] ?? 40, 40 );
 		$row_gap = $this->sanitize_pixel_value( $settings['row_gap'] ?? 40, 40 );
 		$show_arrows = ( $settings['show_arrows'] ?? 'yes' ) === 'yes';
 		$show_dots = ( $settings['show_dots'] ?? 'yes' ) === 'yes';
 		$no_results_message = trim( (string) ( $settings['no_results_message'] ?? '' ) );
 
-		if ( $related_type !== 'amenities' ) {
-			$template_slug = $this->get_template_slug_for_type( $related_type, $settings );
-			$template_id = $this->get_template_id_by_slug( $template_slug );
-		}
+		$template_slug = $this->get_template_slug_for_type( $related_type, $settings );
+		$template_id = $this->get_template_id_by_slug( $template_slug );
 
 		if ( $no_results_message === '' ) {
 			$no_results_message = __( 'No related items found.', 'blueworx-hiraste-enhancements' );
 		}
 
-		$this->render_open_wrapper( $columns, $column_gap, $row_gap, $layout_type );
+		$this->render_open_wrapper( $columns_desktop, $columns_tablet, $columns_mobile, $column_gap, $row_gap, $layout_type );
 
 		if ( ! $property_id ) {
 			$this->render_notice( __( 'No property found for this widget.', 'blueworx-hiraste-enhancements' ) );
@@ -178,7 +208,7 @@ class SL_ESF_Related_Widget extends Widget_Base {
 			return;
 		}
 
-		if ( $related_type !== 'amenities' && ! $template_id ) {
+		if ( ! $template_id ) {
 			$this->render_notice(
 				sprintf(
 					/* translators: %s is an Elementor template slug. */
@@ -190,16 +220,12 @@ class SL_ESF_Related_Widget extends Widget_Base {
 			return;
 		}
 
-		if ( $related_type === 'amenities' ) {
-			$this->render_terms( $property_id, $no_results_message, $layout_type, $columns, $show_arrows, $show_dots );
-		} else {
-			$this->render_posts( $property_id, $related_type, $template_id, $no_results_message, $layout_type, $columns, $show_arrows, $show_dots );
-		}
+		$this->render_posts( $property_id, $related_type, $template_id, $no_results_message, $layout_type, $columns_desktop, $columns_tablet, $columns_mobile, $show_arrows, $show_dots );
 
 		echo '</div>';
 	}
 
-	private function render_posts( $property_id, $related_type, $template_id, $no_results_message, $layout_type, $columns, $show_arrows, $show_dots ) {
+	private function render_posts( $property_id, $related_type, $template_id, $no_results_message, $layout_type, $columns_desktop, $columns_tablet, $columns_mobile, $show_arrows, $show_dots ) {
 		global $post;
 
 		$field_name = $related_type === 'units' ? 'select_units' : 'select_reviews';
@@ -227,7 +253,7 @@ class SL_ESF_Related_Widget extends Widget_Base {
 
 		$old_post = $post instanceof WP_Post ? $post : null;
 
-		$this->render_items_open( $layout_type, $columns );
+		$this->render_items_open( $layout_type, $columns_desktop, $columns_tablet, $columns_mobile );
 		foreach ( $posts as $related_post ) {
 			$post = $related_post;
 			setup_postdata( $post );
@@ -242,29 +268,6 @@ class SL_ESF_Related_Widget extends Widget_Base {
 			$post = $old_post;
 			setup_postdata( $post );
 		}
-	}
-
-	private function render_terms( $property_id, $no_results_message, $layout_type, $columns, $show_arrows, $show_dots ) {
-		$terms = get_the_terms( $property_id, 'amenities' );
-		if ( is_wp_error( $terms ) || empty( $terms ) ) {
-			$this->render_notice( $no_results_message );
-			return;
-		}
-
-		usort( $terms, function( $a, $b ) {
-			return strcasecmp( $a->name, $b->name );
-		} );
-
-		$this->render_items_open( $layout_type, $columns );
-		foreach ( $terms as $term ) {
-			$this->render_item_open( $layout_type );
-			printf(
-				'<div class="sl-esf-results__amenity-card"><span class="sl-esf-results__amenity-name">%s</span></div>',
-				esc_html( $term->name )
-			);
-			$this->render_item_close();
-		}
-		$this->render_items_close( $layout_type, $show_arrows, $show_dots );
 	}
 
 	private function get_related_post_ids( $property_id, $field_name, $field_key ) {
@@ -380,55 +383,25 @@ class SL_ESF_Related_Widget extends Widget_Base {
 		return \Elementor\Plugin::$instance->frontend->get_builder_content_for_display( $template_id, $with_css );
 	}
 
-	private function render_term_template( $template_id, $term ) {
-		global $wp_query;
-
-		$old_queried_object = isset( $wp_query->queried_object ) ? $wp_query->queried_object : null;
-		$old_queried_object_id = isset( $wp_query->queried_object_id ) ? $wp_query->queried_object_id : null;
-		$old_loop_term_exists = isset( $wp_query->loop_term );
-		$old_loop_term = $old_loop_term_exists ? $wp_query->loop_term : null;
-		$old_global_term_exists = isset( $GLOBALS['term'] );
-		$old_global_term = $old_global_term_exists ? $GLOBALS['term'] : null;
-
-		$wp_query->queried_object = $term;
-		$wp_query->queried_object_id = absint( $term->term_id );
-		$wp_query->loop_term = $term;
-		$GLOBALS['term'] = $term;
-
-		$html = $this->render_loop_item_template( $template_id );
-
-		$wp_query->queried_object = $old_queried_object;
-		$wp_query->queried_object_id = $old_queried_object_id;
-		if ( $old_loop_term_exists ) {
-			$wp_query->loop_term = $old_loop_term;
-		} else {
-			unset( $wp_query->loop_term );
-		}
-
-		if ( $old_global_term_exists ) {
-			$GLOBALS['term'] = $old_global_term;
-		} else {
-			unset( $GLOBALS['term'] );
-		}
-
-		return $html;
-	}
-
-	private function render_open_wrapper( $columns, $column_gap, $row_gap, $layout_type ) {
+	private function render_open_wrapper( $columns_desktop, $columns_tablet, $columns_mobile, $column_gap, $row_gap, $layout_type ) {
 		printf(
-			'<div class="sl-esf-results sl-esf-results--columns-%1$d sl-esf-results--%4$s" style="--sl-esf-results-column-gap:%2$dpx;--sl-esf-results-row-gap:%3$dpx;">',
-			absint( $columns ),
+			'<div class="sl-esf-results sl-esf-results--columns-%1$d sl-esf-results--%6$s" style="--sl-esf-results-columns-desktop:%1$d;--sl-esf-results-columns-tablet:%2$d;--sl-esf-results-columns-mobile:%3$d;--sl-esf-results-column-gap:%4$dpx;--sl-esf-results-row-gap:%5$dpx;">',
+			absint( $columns_desktop ),
+			absint( $columns_tablet ),
+			absint( $columns_mobile ),
 			absint( $column_gap ),
 			absint( $row_gap ),
 			esc_attr( $layout_type )
 		);
 	}
 
-	private function render_items_open( $layout_type, $columns ) {
+	private function render_items_open( $layout_type, $columns_desktop, $columns_tablet, $columns_mobile ) {
 		if ( $layout_type === 'carousel' ) {
 			printf(
-				'<div class="sl-esf-related-carousel" data-sl-esf-carousel data-sl-esf-carousel-columns="%1$d"><div class="sl-esf-related-carousel__viewport"><div class="sl-esf-related-carousel__track" data-sl-esf-carousel-track>',
-				absint( $columns )
+				'<div class="sl-esf-related-carousel" data-sl-esf-carousel data-sl-esf-carousel-columns-desktop="%1$d" data-sl-esf-carousel-columns-tablet="%2$d" data-sl-esf-carousel-columns-mobile="%3$d"><div class="sl-esf-related-carousel__viewport"><div class="sl-esf-related-carousel__track" data-sl-esf-carousel-track>',
+				absint( $columns_desktop ),
+				absint( $columns_tablet ),
+				absint( $columns_mobile )
 			);
 			return;
 		}
@@ -481,7 +454,7 @@ class SL_ESF_Related_Widget extends Widget_Base {
 
 	private function sanitize_related_type( $related_type ) {
 		$related_type = (string) $related_type;
-		return in_array( $related_type, [ 'reviews', 'units', 'amenities' ], true ) ? $related_type : 'reviews';
+		return in_array( $related_type, [ 'reviews', 'units' ], true ) ? $related_type : 'reviews';
 	}
 
 	private function sanitize_layout_type( $layout_type ) {
@@ -489,9 +462,9 @@ class SL_ESF_Related_Widget extends Widget_Base {
 		return in_array( $layout_type, [ 'grid', 'carousel' ], true ) ? $layout_type : 'grid';
 	}
 
-	private function sanitize_columns( $columns ) {
+	private function sanitize_columns( $columns, $default = 3 ) {
 		$columns = (string) $columns;
-		return in_array( $columns, [ '1', '2', '3' ], true ) ? absint( $columns ) : 3;
+		return in_array( $columns, [ '1', '2', '3', '4' ], true ) ? absint( $columns ) : $default;
 	}
 
 	private function sanitize_pixel_value( $value, $default ) {

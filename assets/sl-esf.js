@@ -226,10 +226,12 @@
 	}
 
 	function getCarouselVisible(root){
-		const configured = clamp(root.getAttribute('data-sl-esf-carousel-columns'), 1, 3);
-		if (window.innerWidth <= 767) return 1;
-		if (window.innerWidth <= 1024) return Math.min(configured, 2);
-		return configured;
+		const desktop = clamp(root.getAttribute('data-sl-esf-carousel-columns-desktop') || root.getAttribute('data-sl-esf-carousel-columns'), 1, 4);
+		const tablet = clamp(root.getAttribute('data-sl-esf-carousel-columns-tablet'), 1, 4);
+		const mobile = clamp(root.getAttribute('data-sl-esf-carousel-columns-mobile'), 1, 4);
+		if (window.innerWidth <= 767) return mobile;
+		if (window.innerWidth <= 1024) return tablet;
+		return desktop;
 	}
 
 	function initCarousel(root){
@@ -246,6 +248,7 @@
 		let current = 0;
 		let visible = 1;
 		let maxIndex = 0;
+		let autoplayTimer = null;
 
 		function getGap(){
 			const styles = window.getComputedStyle(root);
@@ -293,25 +296,38 @@
 			updateDots();
 		}
 
+		function goNext(){
+			current = current >= maxIndex ? 0 : current + 1;
+			update();
+		}
+
+		function startAutoplay(){
+			if (autoplayTimer) window.clearInterval(autoplayTimer);
+			if (maxIndex < 1) return;
+			autoplayTimer = window.setInterval(goNext, 4000);
+		}
+
 		function refresh(){
 			visible = Math.max(1, Math.min(getCarouselVisible(root), slides.length || 1));
 			maxIndex = Math.max(0, slides.length - visible);
 			current = Math.min(current, maxIndex);
 			buildDots();
 			update();
+			startAutoplay();
 		}
 
 		if (prev) {
 			prev.addEventListener('click', function(){
 				current = current <= 0 ? maxIndex : current - 1;
 				update();
+				startAutoplay();
 			});
 		}
 
 		if (next) {
 			next.addEventListener('click', function(){
-				current = current >= maxIndex ? 0 : current + 1;
-				update();
+				goNext();
+				startAutoplay();
 			});
 		}
 

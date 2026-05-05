@@ -46,16 +46,47 @@ class SL_ESF_Results_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
-			'columns',
+			'columns_desktop',
 			[
-				'label'   => __( 'Columns', 'blueworx-hiraste-enhancements' ),
+				'label'   => __( 'Desktop Columns', 'blueworx-hiraste-enhancements' ),
 				'type'    => Controls_Manager::SELECT,
 				'options' => [
 					'1' => __( '1 Column', 'blueworx-hiraste-enhancements' ),
 					'2' => __( '2 Columns', 'blueworx-hiraste-enhancements' ),
 					'3' => __( '3 Columns', 'blueworx-hiraste-enhancements' ),
+					'4' => __( '4 Columns', 'blueworx-hiraste-enhancements' ),
 				],
 				'default' => '3',
+			]
+		);
+
+		$this->add_control(
+			'columns_tablet',
+			[
+				'label'   => __( 'Tablet Columns', 'blueworx-hiraste-enhancements' ),
+				'type'    => Controls_Manager::SELECT,
+				'options' => [
+					'1' => __( '1 Column', 'blueworx-hiraste-enhancements' ),
+					'2' => __( '2 Columns', 'blueworx-hiraste-enhancements' ),
+					'3' => __( '3 Columns', 'blueworx-hiraste-enhancements' ),
+					'4' => __( '4 Columns', 'blueworx-hiraste-enhancements' ),
+				],
+				'default' => '2',
+			]
+		);
+
+		$this->add_control(
+			'columns_mobile',
+			[
+				'label'   => __( 'Mobile Columns', 'blueworx-hiraste-enhancements' ),
+				'type'    => Controls_Manager::SELECT,
+				'options' => [
+					'1' => __( '1 Column', 'blueworx-hiraste-enhancements' ),
+					'2' => __( '2 Columns', 'blueworx-hiraste-enhancements' ),
+					'3' => __( '3 Columns', 'blueworx-hiraste-enhancements' ),
+					'4' => __( '4 Columns', 'blueworx-hiraste-enhancements' ),
+				],
+				'default' => '1',
 			]
 		);
 
@@ -104,7 +135,9 @@ class SL_ESF_Results_Widget extends Widget_Base {
 		}
 
 		$template_id = $this->get_template_id_by_slug( $template_slug );
-		$columns = $this->sanitize_columns( $settings['columns'] ?? '3' );
+		$columns_desktop = $this->sanitize_columns( $settings['columns_desktop'] ?? $settings['columns'] ?? '3', 3 );
+		$columns_tablet = $this->sanitize_columns( $settings['columns_tablet'] ?? '2', 2 );
+		$columns_mobile = $this->sanitize_columns( $settings['columns_mobile'] ?? '1', 1 );
 		$column_gap = $this->sanitize_pixel_value( $settings['column_gap'] ?? 40, 40 );
 		$row_gap = $this->sanitize_pixel_value( $settings['row_gap'] ?? 40, 40 );
 		$posts_per_page = max( 1, min( absint( $settings['posts_per_page'] ?? 12 ), 48 ) );
@@ -114,7 +147,7 @@ class SL_ESF_Results_Widget extends Widget_Base {
 			$no_results_message = __( 'No properties found.', 'blueworx-hiraste-enhancements' );
 		}
 
-		$this->render_open_wrapper( $columns, $column_gap, $row_gap );
+		$this->render_open_wrapper( $columns_desktop, $columns_tablet, $columns_mobile, $column_gap, $row_gap );
 
 		if ( ! $template_id ) {
 			$this->render_notice(
@@ -152,10 +185,12 @@ class SL_ESF_Results_Widget extends Widget_Base {
 		echo '</div>';
 	}
 
-	private function render_open_wrapper( $columns, $column_gap, $row_gap ) {
+	private function render_open_wrapper( $columns_desktop, $columns_tablet, $columns_mobile, $column_gap, $row_gap ) {
 		printf(
-			'<div class="sl-esf-results sl-esf-results--columns-%1$d" style="--sl-esf-results-column-gap:%2$dpx;--sl-esf-results-row-gap:%3$dpx;">',
-			absint( $columns ),
+			'<div class="sl-esf-results sl-esf-results--columns-%1$d" style="--sl-esf-results-columns-desktop:%1$d;--sl-esf-results-columns-tablet:%2$d;--sl-esf-results-columns-mobile:%3$d;--sl-esf-results-column-gap:%4$dpx;--sl-esf-results-row-gap:%5$dpx;">',
+			absint( $columns_desktop ),
+			absint( $columns_tablet ),
+			absint( $columns_mobile ),
 			absint( $column_gap ),
 			absint( $row_gap )
 		);
@@ -374,9 +409,9 @@ class SL_ESF_Results_Widget extends Widget_Base {
 		return $args;
 	}
 
-	private function sanitize_columns( $columns ) {
+	private function sanitize_columns( $columns, $default = 3 ) {
 		$columns = (string) $columns;
-		return in_array( $columns, [ '1', '2', '3' ], true ) ? absint( $columns ) : 3;
+		return in_array( $columns, [ '1', '2', '3', '4' ], true ) ? absint( $columns ) : $default;
 	}
 
 	private function sanitize_pixel_value( $value, $default ) {
