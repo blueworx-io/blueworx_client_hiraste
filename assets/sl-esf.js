@@ -225,7 +225,113 @@
 		}
 	}
 
+	function getCarouselVisible(root){
+		const configured = clamp(root.getAttribute('data-sl-esf-carousel-columns'), 1, 3);
+		if (window.innerWidth <= 767) return 1;
+		if (window.innerWidth <= 1024) return Math.min(configured, 2);
+		return configured;
+	}
+
+	function initCarousel(root){
+		if (root.getAttribute('data-sl-esf-carousel-ready') === '1') return;
+		root.setAttribute('data-sl-esf-carousel-ready', '1');
+
+		const track = qs(root, '[data-sl-esf-carousel-track]');
+		if (!track) return;
+
+		const slides = qsa(root, '[data-sl-esf-carousel-slide]');
+		const prev = qs(root, '[data-sl-esf-carousel-prev]');
+		const next = qs(root, '[data-sl-esf-carousel-next]');
+		const dotsWrap = qs(root, '[data-sl-esf-carousel-dots]');
+		let current = 0;
+		let visible = 1;
+		let maxIndex = 0;
+
+		function getGap(){
+			const styles = window.getComputedStyle(root);
+			const raw = styles.getPropertyValue('--sl-esf-results-column-gap') || '40px';
+			return clamp(raw, 0, 200);
+		}
+
+		function buildDots(){
+			if (!dotsWrap) return;
+			dotsWrap.innerHTML = '';
+			for (let i = 0; i <= maxIndex; i++) {
+				const dot = document.createElement('button');
+				dot.type = 'button';
+				dot.className = 'sl-esf-related-carousel__dot';
+				dot.setAttribute('aria-label', 'Go to slide ' + String(i + 1));
+				dot.addEventListener('click', function(){
+					current = i;
+					update();
+				});
+				dotsWrap.appendChild(dot);
+			}
+		}
+
+		function updateDots(){
+			if (!dotsWrap) return;
+			qsa(dotsWrap, 'button').forEach(function(dot, idx){
+				const active = idx === current;
+				dot.classList.toggle('is-active', active);
+				dot.setAttribute('aria-current', active ? 'true' : 'false');
+			});
+		}
+
+		function update(){
+			const gap = getGap();
+			const viewportWidth = root.clientWidth;
+			const slideWidth = visible > 1 ? (viewportWidth - (gap * (visible - 1))) / visible : viewportWidth;
+
+			slides.forEach(function(slide){
+				slide.style.flex = '0 0 ' + slideWidth + 'px';
+			});
+
+			track.style.gap = gap + 'px';
+			track.style.transform = 'translate3d(-' + ((slideWidth + gap) * current) + 'px,0,0)';
+			root.classList.toggle('sl-esf-related-carousel--locked', maxIndex < 1);
+			updateDots();
+		}
+
+		function refresh(){
+			visible = Math.max(1, Math.min(getCarouselVisible(root), slides.length || 1));
+			maxIndex = Math.max(0, slides.length - visible);
+			current = Math.min(current, maxIndex);
+			buildDots();
+			update();
+		}
+
+		if (prev) {
+			prev.addEventListener('click', function(){
+				current = current <= 0 ? maxIndex : current - 1;
+				update();
+			});
+		}
+
+		if (next) {
+			next.addEventListener('click', function(){
+				current = current >= maxIndex ? 0 : current + 1;
+				update();
+			});
+		}
+
+		window.addEventListener('resize', refresh);
+		refresh();
+	}
+
+	function initCarousels(root){
+		(root || document).querySelectorAll('[data-sl-esf-carousel]').forEach(initCarousel);
+	}
+
 	document.addEventListener('DOMContentLoaded', function(){
 		document.querySelectorAll('.sl-esf').forEach(initOne);
+		initCarousels(document);
 	});
+
+	if (window.elementorFrontend && window.elementorFrontend.hooks) {
+		window.elementorFrontend.hooks.addAction('frontend/element_ready/sl_esf_property_related_items.default', function($scope){
+			const root = $scope && $scope[0] ? $scope[0] : document;
+			initCarousels(root);
+		});
+	}
 })();

@@ -12,6 +12,7 @@ class SL_ESF_Related_Widget extends Widget_Base {
 	public function get_title() { return __( 'Property Related Items', 'blueworx-hiraste-enhancements' ); }
 	public function get_icon() { return 'eicon-posts-grid'; }
 	public function get_categories() { return [ 'general' ]; }
+	public function get_script_depends() { return [ 'sl-esf-frontend' ]; }
 	public function get_style_depends() { return [ 'sl-esf-frontend' ]; }
 
 	protected function register_controls() {
@@ -58,6 +59,19 @@ class SL_ESF_Related_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
+			'layout_type',
+			[
+				'label'   => __( 'Layout Type', 'blueworx-hiraste-enhancements' ),
+				'type'    => Controls_Manager::SELECT,
+				'options' => [
+					'grid'     => __( 'Grid', 'blueworx-hiraste-enhancements' ),
+					'carousel' => __( 'Carousel', 'blueworx-hiraste-enhancements' ),
+				],
+				'default' => 'grid',
+			]
+		);
+
+		$this->add_control(
 			'columns',
 			[
 				'label'   => __( 'Columns', 'blueworx-hiraste-enhancements' ),
@@ -96,6 +110,32 @@ class SL_ESF_Related_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
+			'show_arrows',
+			[
+				'label'        => __( 'Show Arrows', 'blueworx-hiraste-enhancements' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => __( 'Show', 'blueworx-hiraste-enhancements' ),
+				'label_off'    => __( 'Hide', 'blueworx-hiraste-enhancements' ),
+				'return_value' => 'yes',
+				'default'      => 'yes',
+				'condition'    => [ 'layout_type' => 'carousel' ],
+			]
+		);
+
+		$this->add_control(
+			'show_dots',
+			[
+				'label'        => __( 'Show Dots', 'blueworx-hiraste-enhancements' ),
+				'type'         => Controls_Manager::SWITCHER,
+				'label_on'     => __( 'Show', 'blueworx-hiraste-enhancements' ),
+				'label_off'    => __( 'Hide', 'blueworx-hiraste-enhancements' ),
+				'return_value' => 'yes',
+				'default'      => 'yes',
+				'condition'    => [ 'layout_type' => 'carousel' ],
+			]
+		);
+
+		$this->add_control(
 			'no_results_message',
 			[
 				'label'   => __( 'Empty Message', 'blueworx-hiraste-enhancements' ),
@@ -113,9 +153,12 @@ class SL_ESF_Related_Widget extends Widget_Base {
 		$related_type = $this->sanitize_related_type( $settings['related_type'] ?? 'reviews' );
 		$template_slug = '';
 		$template_id = 0;
+		$layout_type = $this->sanitize_layout_type( $settings['layout_type'] ?? 'grid' );
 		$columns = $this->sanitize_columns( $settings['columns'] ?? '3' );
 		$column_gap = $this->sanitize_pixel_value( $settings['column_gap'] ?? 40, 40 );
 		$row_gap = $this->sanitize_pixel_value( $settings['row_gap'] ?? 40, 40 );
+		$show_arrows = ( $settings['show_arrows'] ?? 'yes' ) === 'yes';
+		$show_dots = ( $settings['show_dots'] ?? 'yes' ) === 'yes';
 		$no_results_message = trim( (string) ( $settings['no_results_message'] ?? '' ) );
 
 		if ( $related_type !== 'amenities' ) {
@@ -127,7 +170,7 @@ class SL_ESF_Related_Widget extends Widget_Base {
 			$no_results_message = __( 'No related items found.', 'blueworx-hiraste-enhancements' );
 		}
 
-		$this->render_open_wrapper( $columns, $column_gap, $row_gap );
+		$this->render_open_wrapper( $columns, $column_gap, $row_gap, $layout_type );
 
 		if ( ! $property_id ) {
 			$this->render_notice( __( 'No property found for this widget.', 'blueworx-hiraste-enhancements' ) );
@@ -148,15 +191,15 @@ class SL_ESF_Related_Widget extends Widget_Base {
 		}
 
 		if ( $related_type === 'amenities' ) {
-			$this->render_terms( $property_id, $no_results_message );
+			$this->render_terms( $property_id, $no_results_message, $layout_type, $columns, $show_arrows, $show_dots );
 		} else {
-			$this->render_posts( $property_id, $related_type, $template_id, $no_results_message );
+			$this->render_posts( $property_id, $related_type, $template_id, $no_results_message, $layout_type, $columns, $show_arrows, $show_dots );
 		}
 
 		echo '</div>';
 	}
 
-	private function render_posts( $property_id, $related_type, $template_id, $no_results_message ) {
+	private function render_posts( $property_id, $related_type, $template_id, $no_results_message, $layout_type, $columns, $show_arrows, $show_dots ) {
 		global $post;
 
 		$field_name = $related_type === 'units' ? 'select_units' : 'select_reviews';
@@ -184,15 +227,15 @@ class SL_ESF_Related_Widget extends Widget_Base {
 
 		$old_post = $post instanceof WP_Post ? $post : null;
 
-		echo '<div class="sl-esf-results__grid">';
+		$this->render_items_open( $layout_type, $columns );
 		foreach ( $posts as $related_post ) {
 			$post = $related_post;
 			setup_postdata( $post );
-			echo '<article class="sl-esf-results__item">';
+			$this->render_item_open( $layout_type );
 			echo $this->render_loop_item_template( $template_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Elementor returns rendered template HTML.
-			echo '</article>';
+			$this->render_item_close();
 		}
-		echo '</div>';
+		$this->render_items_close( $layout_type, $show_arrows, $show_dots );
 
 		wp_reset_postdata();
 		if ( $old_post instanceof WP_Post ) {
@@ -201,7 +244,7 @@ class SL_ESF_Related_Widget extends Widget_Base {
 		}
 	}
 
-	private function render_terms( $property_id, $no_results_message ) {
+	private function render_terms( $property_id, $no_results_message, $layout_type, $columns, $show_arrows, $show_dots ) {
 		$terms = get_the_terms( $property_id, 'amenities' );
 		if ( is_wp_error( $terms ) || empty( $terms ) ) {
 			$this->render_notice( $no_results_message );
@@ -212,16 +255,16 @@ class SL_ESF_Related_Widget extends Widget_Base {
 			return strcasecmp( $a->name, $b->name );
 		} );
 
-		echo '<div class="sl-esf-results__grid">';
+		$this->render_items_open( $layout_type, $columns );
 		foreach ( $terms as $term ) {
-			echo '<article class="sl-esf-results__item">';
+			$this->render_item_open( $layout_type );
 			printf(
 				'<div class="sl-esf-results__amenity-card"><span class="sl-esf-results__amenity-name">%s</span></div>',
 				esc_html( $term->name )
 			);
-			echo '</article>';
+			$this->render_item_close();
 		}
-		echo '</div>';
+		$this->render_items_close( $layout_type, $show_arrows, $show_dots );
 	}
 
 	private function get_related_post_ids( $property_id, $field_name, $field_key ) {
@@ -371,13 +414,62 @@ class SL_ESF_Related_Widget extends Widget_Base {
 		return $html;
 	}
 
-	private function render_open_wrapper( $columns, $column_gap, $row_gap ) {
+	private function render_open_wrapper( $columns, $column_gap, $row_gap, $layout_type ) {
 		printf(
-			'<div class="sl-esf-results sl-esf-results--columns-%1$d" style="--sl-esf-results-column-gap:%2$dpx;--sl-esf-results-row-gap:%3$dpx;">',
+			'<div class="sl-esf-results sl-esf-results--columns-%1$d sl-esf-results--%4$s" style="--sl-esf-results-column-gap:%2$dpx;--sl-esf-results-row-gap:%3$dpx;">',
 			absint( $columns ),
 			absint( $column_gap ),
-			absint( $row_gap )
+			absint( $row_gap ),
+			esc_attr( $layout_type )
 		);
+	}
+
+	private function render_items_open( $layout_type, $columns ) {
+		if ( $layout_type === 'carousel' ) {
+			printf(
+				'<div class="sl-esf-related-carousel" data-sl-esf-carousel data-sl-esf-carousel-columns="%1$d"><div class="sl-esf-related-carousel__viewport"><div class="sl-esf-related-carousel__track" data-sl-esf-carousel-track>',
+				absint( $columns )
+			);
+			return;
+		}
+
+		echo '<div class="sl-esf-results__grid">';
+	}
+
+	private function render_item_open( $layout_type ) {
+		$class = 'sl-esf-results__item';
+		$attributes = '';
+
+		if ( $layout_type === 'carousel' ) {
+			$class .= ' sl-esf-related-carousel__slide';
+			$attributes = ' data-sl-esf-carousel-slide';
+		}
+
+		printf( '<article class="%1$s"%2$s>', esc_attr( $class ), $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Attribute string is fixed.
+	}
+
+	private function render_item_close() {
+		echo '</article>';
+	}
+
+	private function render_items_close( $layout_type, $show_arrows, $show_dots ) {
+		if ( $layout_type !== 'carousel' ) {
+			echo '</div>';
+			return;
+		}
+
+		echo '</div></div>';
+
+		if ( $show_arrows ) {
+			echo '<button class="sl-esf-related-carousel__arrow sl-esf-related-carousel__arrow--prev elementor-swiper-button elementor-swiper-button-prev" type="button" aria-label="' . esc_attr__( 'Previous', 'blueworx-hiraste-enhancements' ) . '" data-sl-esf-carousel-prev><span class="eicon-chevron-left" aria-hidden="true"></span></button>';
+			echo '<button class="sl-esf-related-carousel__arrow sl-esf-related-carousel__arrow--next elementor-swiper-button elementor-swiper-button-next" type="button" aria-label="' . esc_attr__( 'Next', 'blueworx-hiraste-enhancements' ) . '" data-sl-esf-carousel-next><span class="eicon-chevron-right" aria-hidden="true"></span></button>';
+		}
+
+		if ( $show_dots ) {
+			echo '<div class="sl-esf-related-carousel__dots swiper-pagination" data-sl-esf-carousel-dots></div>';
+		}
+
+		echo '</div>';
 	}
 
 	private function render_notice( $message ) {
@@ -390,6 +482,11 @@ class SL_ESF_Related_Widget extends Widget_Base {
 	private function sanitize_related_type( $related_type ) {
 		$related_type = (string) $related_type;
 		return in_array( $related_type, [ 'reviews', 'units', 'amenities' ], true ) ? $related_type : 'reviews';
+	}
+
+	private function sanitize_layout_type( $layout_type ) {
+		$layout_type = (string) $layout_type;
+		return in_array( $layout_type, [ 'grid', 'carousel' ], true ) ? $layout_type : 'grid';
 	}
 
 	private function sanitize_columns( $columns ) {

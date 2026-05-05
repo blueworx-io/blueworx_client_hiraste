@@ -4,7 +4,7 @@ Tags: elementor, search, property, filters
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.3.2
+Stable tag: 0.3.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,7 +21,7 @@ Current enhancements include:
 * Guest capacity filtering.
 * Multi-unit search matching.
 * Enhanced property results widget using an Elementor Loop Item template.
-* Property related items widget for reviews, units, and amenities.
+* Property related items widget for reviews, units, and amenities with grid and carousel layouts.
 * Active Enhancements admin information page.
 
 == Installation ==
@@ -31,6 +31,10 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.3.3 =
+* Added grid/carousel layout option to the Property Related Items widget.
+* Added carousel arrows, dots, looping, and visible slide controls.
 
 = 0.3.2 =
 * Updated amenities in the Property Related Items widget to render directly from assigned taxonomy terms.
