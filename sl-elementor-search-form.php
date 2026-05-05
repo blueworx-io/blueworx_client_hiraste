@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: BlueWorx Hiraste Enhancements
- * Description: Adds Elementor widgets for Hiraste property search and filtered property results.
- * Version: 0.3.0
+ * Description: Adds Elementor widgets for Hiraste property search, filtered property results, and related property items.
+ * Version: 0.3.2
  * Author: ChatGPT
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SL_ESF_VERSION', '0.3.0' );
+define( 'SL_ESF_VERSION', '0.3.2' );
 define( 'SL_ESF_PLUGIN_FILE', __FILE__ );
 define( 'SL_ESF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SL_ESF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -51,9 +51,11 @@ final class SL_ESF_Plugin {
 
 		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-widget.php';
 		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-results-widget.php';
+		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-related-widget.php';
 
 		$widgets_manager->register( new \SL_ESF_Widget() );
 		$widgets_manager->register( new \SL_ESF_Results_Widget() );
+		$widgets_manager->register( new \SL_ESF_Related_Widget() );
 	}
 
 	public function register_admin_page() {
@@ -91,6 +93,10 @@ final class SL_ESF_Plugin {
 			[
 				'title' => __( 'Enhanced Property Results Widget', 'blueworx-hiraste-enhancements' ),
 				'body'  => __( 'Adds an Elementor widget that renders filtered property results using a selected Elementor Loop Item template.', 'blueworx-hiraste-enhancements' ),
+			],
+			[
+				'title' => __( 'Property Related Items Widget', 'blueworx-hiraste-enhancements' ),
+				'body'  => __( 'Adds an Elementor widget for showing selected reviews, selected units, or assigned amenities on property pages.', 'blueworx-hiraste-enhancements' ),
 			],
 		];
 		?>

@@ -137,6 +137,19 @@
 	font-size: 14px;
 }
 
+.sl-esf-results__amenity-card {
+	display: flex;
+	align-items: center;
+	min-height: 44px;
+	padding: 10px 0;
+}
+
+.sl-esf-results__amenity-name {
+	font-size: 16px;
+	font-weight: 400;
+	text-transform: capitalize;
+}
+
 .sl-esf-results__pagination {
 	margin-top: var(--sl-esf-results-row-gap, 40px);
 }
