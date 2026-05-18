@@ -4,7 +4,7 @@ Tags: elementor, search, property, filters
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.3.10
+Stable tag: 0.3.12
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,13 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.3.12 =
+* Added caching for property unit filter matching.
+* Removed the unused public search form nonce field.
+
+= 0.3.11 =
+* Hid empty destination and collection terms in Elementor Loop Grid taxonomy queries.
 
 = 0.3.10 =
 * Set Property Amenities icon images to 50px by 50px.

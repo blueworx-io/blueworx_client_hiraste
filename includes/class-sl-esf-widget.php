@@ -94,7 +94,6 @@ class SL_ESF_Widget extends Widget_Base {
 			<form class="sl-esf__form" method="GET" action="<?php echo esc_url( $action ?: '/' ); ?>">
 				<!-- Required by WP core search -->
 				<input type="hidden" name="post_type" value="property" />
-				<?php wp_nonce_field( 'blueworx_hiraste_enhancements_search', 'blueworx_hiraste_enhancements_nonce', false ); ?>
 
 				<div class="sl-esf__basic">
 					<div class="sl-esf__field sl-esf__field--select sl-esf__field--destination">

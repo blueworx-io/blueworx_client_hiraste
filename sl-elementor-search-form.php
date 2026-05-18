@@ -2,7 +2,7 @@
 /**
  * Plugin Name: BlueWorx Hiraste Enhancements
  * Description: Adds Elementor widgets for Hiraste property search, filtered property results, and related property items.
- * Version: 0.3.10
+ * Version: 0.3.12
  * Author: ChatGPT
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SL_ESF_VERSION', '0.3.10' );
+define( 'SL_ESF_VERSION', '0.3.12' );
 define( 'SL_ESF_PLUGIN_FILE', __FILE__ );
 define( 'SL_ESF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SL_ESF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -27,7 +27,21 @@ final class SL_ESF_Plugin {
 	public function init() {
 		add_action( 'elementor/widgets/register', [ $this, 'register_widget' ] );
 		add_action( 'elementor/frontend/after_register_scripts', [ $this, 'register_assets' ] );
+		add_action( 'elementor/frontend/widget/before_render', [ $this, 'start_loop_grid_term_filtering' ] );
+		add_action( 'elementor/frontend/widget/after_render', [ $this, 'stop_loop_grid_term_filtering' ] );
 		add_action( 'admin_menu', [ $this, 'register_admin_page' ] );
+	}
+
+	public function start_loop_grid_term_filtering( $widget ) {
+		if ( $widget && method_exists( $widget, 'get_name' ) && $widget->get_name() === 'loop-grid' ) {
+			$GLOBALS['sl_esf_filter_empty_loop_grid_terms'] = true;
+		}
+	}
+
+	public function stop_loop_grid_term_filtering( $widget ) {
+		if ( $widget && method_exists( $widget, 'get_name' ) && $widget->get_name() === 'loop-grid' ) {
+			$GLOBALS['sl_esf_filter_empty_loop_grid_terms'] = false;
+		}
 	}
 
 	public function register_assets() {
@@ -123,6 +137,22 @@ final class SL_ESF_Plugin {
 }
 
 new SL_ESF_Plugin();
+
+add_filter( 'get_terms_args', function( $args, $taxonomies ) {
+	if ( is_admin() || empty( $GLOBALS['sl_esf_filter_empty_loop_grid_terms'] ) ) {
+		return $args;
+	}
+
+	$supported_taxonomies = [ 'destinations', 'collections' ];
+	$taxonomies = array_map( 'sanitize_key', (array) $taxonomies );
+
+	if ( empty( array_intersect( $supported_taxonomies, $taxonomies ) ) ) {
+		return $args;
+	}
+
+	$args['hide_empty'] = true;
+	return $args;
+}, 10, 2 );
 
 
 // ---- Search integration (properties + units filtering) ----
@@ -272,7 +302,40 @@ function sl_esf_property_matches_unit_filters( $property_id, $requirements, $min
 	return $match_requirement( 0 );
 }
 
+function sl_esf_get_filter_cache_version() {
+	return (string) get_option( 'sl_esf_filter_cache_version', '1' );
+}
+
+function sl_esf_bump_filter_cache_version() {
+	update_option( 'sl_esf_filter_cache_version', (string) time(), false );
+}
+
+function sl_esf_maybe_bump_filter_cache_version_for_post( $post_id ) {
+	if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+		return;
+	}
+
+	$post_type = get_post_type( $post_id );
+	if ( in_array( $post_type, [ 'property', 'unit' ], true ) ) {
+		sl_esf_bump_filter_cache_version();
+	}
+}
+
+add_action( 'save_post', 'sl_esf_maybe_bump_filter_cache_version_for_post' );
+add_action( 'deleted_post', 'sl_esf_maybe_bump_filter_cache_version_for_post' );
+
 function sl_esf_find_matching_property_ids( $requirements, $min_units, $guests ) {
+	$cache_key = 'sl_esf_matching_' . md5( wp_json_encode([
+		'requirements' => $requirements,
+		'min_units'    => absint( $min_units ),
+		'guests'       => absint( $guests ),
+		'version'      => sl_esf_get_filter_cache_version(),
+	]) );
+	$cached = get_transient( $cache_key );
+	if ( is_array( $cached ) ) {
+		return array_map( 'intval', $cached );
+	}
+
 	$property_ids = get_posts([
 		'post_type'              => 'property',
 		'post_status'            => 'publish',
@@ -290,6 +353,8 @@ function sl_esf_find_matching_property_ids( $requirements, $min_units, $guests )
 			$matching_ids[] = intval( $property_id );
 		}
 	}
+
+	set_transient( $cache_key, $matching_ids, HOUR_IN_SECONDS );
 
 	return $matching_ids;
 }
