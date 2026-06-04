@@ -253,7 +253,7 @@ class SL_ESF_Related_Widget extends Widget_Base {
 
 		$old_post = $post instanceof WP_Post ? $post : null;
 
-		$this->render_items_open( $layout_type, $columns_desktop, $columns_tablet, $columns_mobile );
+		$this->render_items_open( $layout_type, $columns_desktop, $columns_tablet, $columns_mobile, $related_type );
 		foreach ( $posts as $related_post ) {
 			$post = $related_post;
 			setup_postdata( $post );
@@ -395,13 +395,16 @@ class SL_ESF_Related_Widget extends Widget_Base {
 		);
 	}
 
-	private function render_items_open( $layout_type, $columns_desktop, $columns_tablet, $columns_mobile ) {
+	private function render_items_open( $layout_type, $columns_desktop, $columns_tablet, $columns_mobile, $related_type ) {
 		if ( $layout_type === 'carousel' ) {
+			$should_loop = $related_type === 'units' ? '1' : '0';
+
 			printf(
-				'<div class="sl-esf-related-carousel" data-sl-esf-carousel data-sl-esf-carousel-columns-desktop="%1$d" data-sl-esf-carousel-columns-tablet="%2$d" data-sl-esf-carousel-columns-mobile="%3$d"><div class="sl-esf-related-carousel__viewport"><div class="sl-esf-related-carousel__track" data-sl-esf-carousel-track>',
+				'<div class="sl-esf-related-carousel" data-sl-esf-carousel data-sl-esf-carousel-loop="%4$s" data-sl-esf-carousel-columns-desktop="%1$d" data-sl-esf-carousel-columns-tablet="%2$d" data-sl-esf-carousel-columns-mobile="%3$d"><div class="sl-esf-related-carousel__viewport"><div class="sl-esf-related-carousel__track" data-sl-esf-carousel-track>',
 				absint( $columns_desktop ),
 				absint( $columns_tablet ),
-				absint( $columns_mobile )
+				absint( $columns_mobile ),
+				esc_attr( $should_loop )
 			);
 			return;
 		}

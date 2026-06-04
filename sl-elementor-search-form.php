@@ -2,7 +2,7 @@
 /**
  * Plugin Name: BlueWorx Hiraste Enhancements
  * Description: Adds Elementor widgets for Hiraste property search, filtered property results, and related property items.
- * Version: 0.3.12
+ * Version: 0.3.14
  * Author: ChatGPT
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SL_ESF_VERSION', '0.3.12' );
+define( 'SL_ESF_VERSION', '0.3.14' );
 define( 'SL_ESF_PLUGIN_FILE', __FILE__ );
 define( 'SL_ESF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SL_ESF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

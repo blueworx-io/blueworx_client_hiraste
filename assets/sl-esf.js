@@ -245,10 +245,14 @@
 		const prev = qs(root, '[data-sl-esf-carousel-prev]');
 		const next = qs(root, '[data-sl-esf-carousel-next]');
 		const dotsWrap = qs(root, '[data-sl-esf-carousel-dots]');
+		const loopEnabled = root.getAttribute('data-sl-esf-carousel-loop') === '1';
 		let current = 0;
 		let visible = 1;
 		let maxIndex = 0;
+		let slideStep = 0;
 		let autoplayTimer = null;
+		let isMoving = false;
+		let loopDirection = '';
 
 		function getGap(){
 			const styles = window.getComputedStyle(root);
@@ -259,45 +263,118 @@
 		function buildDots(){
 			if (!dotsWrap) return;
 			dotsWrap.innerHTML = '';
-			for (let i = 0; i <= maxIndex; i++) {
+			const dotCount = loopEnabled && maxIndex > 0 ? slides.length : maxIndex + 1;
+			for (let i = 0; i < dotCount; i++) {
 				const dot = document.createElement('button');
 				dot.type = 'button';
 				dot.className = 'sl-esf-related-carousel__dot';
 				dot.setAttribute('aria-label', 'Go to slide ' + String(i + 1));
 				dot.addEventListener('click', function(){
 					current = i;
-					update();
+					renderLoopOrder();
+					update(false);
 				});
 				dotsWrap.appendChild(dot);
 			}
 		}
 
+		function getDotIndex(){
+			if (loopEnabled && slides.length) return ((current % slides.length) + slides.length) % slides.length;
+			if (current < 0) return maxIndex;
+			if (current > maxIndex) return maxIndex;
+			return current;
+		}
+
 		function updateDots(){
 			if (!dotsWrap) return;
+			const activeIndex = getDotIndex();
 			qsa(dotsWrap, 'button').forEach(function(dot, idx){
-				const active = idx === current;
+				const active = idx === activeIndex;
 				dot.classList.toggle('is-active', active);
 				dot.setAttribute('aria-current', active ? 'true' : 'false');
 			});
 		}
 
-		function update(){
+		function renderLoopOrder(){
+			if (!loopEnabled || !slides.length) return;
+			const normalized = getDotIndex();
+			slides.forEach(function(_, idx){
+				track.appendChild(slides[(normalized + idx) % slides.length]);
+			});
+		}
+
+		function update(animate){
 			const gap = getGap();
 			const viewportWidth = root.clientWidth;
 			const slideWidth = visible > 1 ? (viewportWidth - (gap * (visible - 1))) / visible : viewportWidth;
+			slideStep = slideWidth + gap;
+
+			if (animate === false) {
+				track.style.transition = 'none';
+			} else {
+				track.style.transition = '';
+			}
 
 			slides.forEach(function(slide){
 				slide.style.flex = '0 0 ' + slideWidth + 'px';
 			});
 
 			track.style.gap = gap + 'px';
-			track.style.transform = 'translate3d(-' + ((slideWidth + gap) * current) + 'px,0,0)';
+			track.style.transform = loopEnabled ? 'translate3d(0,0,0)' : 'translate3d(-' + (slideStep * current) + 'px,0,0)';
 			root.classList.toggle('sl-esf-related-carousel--locked', maxIndex < 1);
 			updateDots();
+
+			if (animate === false) {
+				window.requestAnimationFrame(function(){
+					track.style.transition = '';
+				});
+			}
+		}
+
+		function resetLoopTrack(){
+			track.style.transition = 'none';
+			track.style.transform = 'translate3d(0,0,0)';
+			window.requestAnimationFrame(function(){
+				track.style.transition = '';
+				isMoving = false;
+			});
 		}
 
 		function goNext(){
+			if (maxIndex < 1) return;
+
+			if (loopEnabled) {
+				if (isMoving) return;
+				isMoving = true;
+				loopDirection = 'next';
+				track.style.transition = '';
+				track.style.transform = 'translate3d(-' + slideStep + 'px,0,0)';
+				return;
+			}
+
 			current = current >= maxIndex ? 0 : current + 1;
+			update();
+		}
+
+		function goPrev(){
+			if (maxIndex < 1) return;
+
+			if (loopEnabled) {
+				if (isMoving) return;
+				isMoving = true;
+				loopDirection = 'prev';
+				current = (current - 1 + slides.length) % slides.length;
+				track.insertBefore(slides[current], track.firstElementChild);
+				track.style.transition = 'none';
+				track.style.transform = 'translate3d(-' + slideStep + 'px,0,0)';
+				track.offsetHeight;
+				track.style.transition = '';
+				track.style.transform = 'translate3d(0,0,0)';
+				updateDots();
+				return;
+			}
+
+			current = current <= 0 ? maxIndex : current - 1;
 			update();
 		}
 
@@ -310,16 +387,19 @@
 		function refresh(){
 			visible = Math.max(1, Math.min(getCarouselVisible(root), slides.length || 1));
 			maxIndex = Math.max(0, slides.length - visible);
-			current = Math.min(current, maxIndex);
+			current = Math.max(0, Math.min(current, maxIndex));
+			if (loopEnabled) {
+				renderLoopOrder();
+				maxIndex = slides.length > visible ? slides.length - 1 : 0;
+			}
 			buildDots();
-			update();
+			update(false);
 			startAutoplay();
 		}
 
 		if (prev) {
 			prev.addEventListener('click', function(){
-				current = current <= 0 ? maxIndex : current - 1;
-				update();
+				goPrev();
 				startAutoplay();
 			});
 		}
@@ -330,6 +410,24 @@
 				startAutoplay();
 			});
 		}
+
+		track.addEventListener('transitionend', function(e){
+			if (e.target !== track || !loopEnabled || !isMoving) {
+				return;
+			}
+
+			if (loopDirection === 'next') {
+				const first = track.firstElementChild;
+				if (first) {
+					track.appendChild(first);
+				}
+				current = (current + 1) % slides.length;
+				updateDots();
+			}
+
+			loopDirection = '';
+			resetLoopTrack();
+		});
 
 		window.addEventListener('resize', refresh);
 		refresh();

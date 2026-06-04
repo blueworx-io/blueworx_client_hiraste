@@ -4,7 +4,7 @@ Tags: elementor, search, property, filters
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.3.12
+Stable tag: 0.3.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,12 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.3.14 =
+* Improved unit carousel looping so cards rotate continuously instead of snapping back.
+
+= 0.3.13 =
+* Added endless circular looping for unit carousels.
 
 = 0.3.12 =
 * Added caching for property unit filter matching.
