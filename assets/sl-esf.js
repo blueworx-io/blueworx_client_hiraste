@@ -11,7 +11,7 @@
 
 	function initOne(root){
 		const maxUnits = clamp(root.getAttribute('data-max-units'), 1, 20);
-		const defaultUnits = clamp(root.getAttribute('data-default-units'), 1, maxUnits);
+		const defaultUnits = clamp(root.getAttribute('data-default-units'), 0, maxUnits);
 
 		const advancedToggle = qs(root, '.sl-esf__advanced-toggle');
 		const advancedPanel = qs(root, '.sl-esf__advanced-panel');
@@ -218,7 +218,9 @@
 
 		// Seed default units
 		if (unitsSelect) {
-			unitsSelect.value = String(defaultUnits);
+			if (defaultUnits > 0) {
+				unitsSelect.value = String(defaultUnits);
+			}
 			syncDynamicUnitsToSelect();
 		} else {
 			for (let i=0; i<defaultUnits; i++) addUnit();

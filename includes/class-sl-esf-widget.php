@@ -40,13 +40,13 @@ class SL_ESF_Widget extends Widget_Base {
 		$this->add_control(
 			'default_units',
 			[ 'label' => __( 'Default Units', 'blueworx-hiraste-enhancements' ), 'type' => Controls_Manager::NUMBER,
-			  'min' => 1, 'max' => 10, 'step' => 1, 'default' => 2 ]
+			  'min' => 0, 'max' => 10, 'step' => 1, 'default' => 0 ]
 		);
 
 		$this->add_control(
 			'default_guests',
 			[ 'label' => __( 'Default Guests', 'blueworx-hiraste-enhancements' ), 'type' => Controls_Manager::NUMBER,
-			  'min' => 1, 'max' => 50, 'step' => 1, 'default' => 4 ]
+			  'min' => 0, 'max' => 50, 'step' => 1, 'default' => 0 ]
 		);
 
 		$this->add_control(
@@ -72,8 +72,8 @@ class SL_ESF_Widget extends Widget_Base {
 		$action = trim( (string) $settings['form_action'] );
 
 		$max_units = max( 1, min( (int) $settings['max_units'], 20 ) );
-		$default_units = max( 1, min( (int) $settings['default_units'], $max_units ) );
-		$default_guests = max( 1, min( (int) $settings['default_guests'], 50 ) );
+		$default_units = max( 0, min( (int) $settings['default_units'], $max_units ) );
+		$default_guests = max( 0, min( (int) $settings['default_guests'], 50 ) );
 		$destination_placeholder = trim( (string) $settings['placeholder_destination'] );
 		if ( $destination_placeholder === '' ) {
 			$destination_placeholder = __( 'All destinations', 'blueworx-hiraste-enhancements' );
@@ -216,7 +216,7 @@ class SL_ESF_Widget extends Widget_Base {
 				<div class="sl-esf__unit" data-sl-esf-unit>
 					<div class="sl-esf__unit-head">
 						<div class="sl-esf__unit-title">Unit <span data-sl-esf-unit-number></span></div>
-						<button type="button" class="sl-esf__icon-btn" aria-label="Remove unit" data-sl-esf-remove-unit>×</button>
+						<button type="button" class="sl-esf__icon-btn" aria-label="Remove unit" data-sl-esf-remove-unit>&times;</button>
 					</div>
 					<div class="sl-esf__unit-body">
 						<div class="sl-esf__counter">

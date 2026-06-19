@@ -303,31 +303,41 @@ class SL_ESF_Results_Widget extends Widget_Base {
 	}
 
 	private function get_request_tax_query( $search_request ) {
+		if ( function_exists( 'blueworx_hiraste_enhancements_build_tax_query' ) ) {
+			return blueworx_hiraste_enhancements_build_tax_query( $search_request );
+		}
+
 		$tax_clauses = [];
-		$map = [
-			'destinations' => 'destinations',
-			'collections'  => 'collections',
-			'amenities'    => 'amenities',
+		$grouped_terms = [
+			'destinations' => [],
+			'collections'  => [],
+			'amenities'    => [],
 		];
 
-		foreach ( $map as $param => $taxonomy ) {
-			$ids = $search_request[ $param ] ?? [];
-			if ( ! empty( $ids ) ) {
-				$tax_clauses[] = [
-					'taxonomy' => $taxonomy,
-					'field'    => 'term_id',
-					'terms'    => array_map( 'absint', $ids ),
-					'operator' => 'IN',
-				];
+		foreach ( $grouped_terms as $taxonomy => $terms ) {
+			if ( ! empty( $search_request[ $taxonomy ] ) ) {
+				$grouped_terms[ $taxonomy ] = array_merge(
+					$grouped_terms[ $taxonomy ],
+					array_map( 'absint', (array) $search_request[ $taxonomy ] )
+				);
 			}
 		}
 
 		$destination_term = absint( $search_request['destination_term'] ?? 0 );
 		if ( $destination_term ) {
+			$grouped_terms['destinations'][] = $destination_term;
+		}
+
+		foreach ( $grouped_terms as $taxonomy => $terms ) {
+			$terms = array_values( array_unique( array_filter( array_map( 'absint', $terms ) ) ) );
+			if ( empty( $terms ) ) {
+				continue;
+			}
+
 			$tax_clauses[] = [
-				'taxonomy' => 'destinations',
+				'taxonomy' => $taxonomy,
 				'field'    => 'term_id',
-				'terms'    => [ $destination_term ],
+				'terms'    => $terms,
 				'operator' => 'IN',
 			];
 		}
@@ -336,7 +346,11 @@ class SL_ESF_Results_Widget extends Widget_Base {
 			return [];
 		}
 
-		return array_merge( [ 'relation' => 'OR' ], $tax_clauses );
+		if ( count( $tax_clauses ) < 2 ) {
+			return $tax_clauses;
+		}
+
+		return array_merge( [ 'relation' => 'AND' ], $tax_clauses );
 	}
 
 	private function render_loop_item_template( $template_id ) {

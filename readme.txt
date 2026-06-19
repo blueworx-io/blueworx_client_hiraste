@@ -4,7 +4,7 @@ Tags: elementor, search, property, filters
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.3.14
+Stable tag: 0.3.17
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,7 @@ Current enhancements include:
 * Enhanced property results widget using an Elementor Loop Item template.
 * Property related items widget for reviews and units with grid and carousel layouts.
 * Property amenities widget using an Elementor Loop Item template with amenity icons.
+* Drag-and-drop taxonomy ordering for destinations, collections, and amenities.
 * Active Enhancements admin information page.
 
 == Installation ==
@@ -32,6 +33,17 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.3.17 =
+* Added drag-and-drop backend ordering for destinations, collections, and amenities.
+
+= 0.3.16 =
+* Added an administrator capability repair for property admin access.
+
+= 0.3.15 =
+* Fixed search cache refresh when properties or units are deleted.
+* Updated taxonomy filters so different filter types narrow results together.
+* Changed the search form to start without active guest or unit filters.
 
 = 0.3.14 =
 * Improved unit carousel looping so cards rotate continuously instead of snapping back.
