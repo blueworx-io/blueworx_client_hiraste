@@ -1,18 +1,18 @@
-=== BlueWorx Hiraste Enhancements ===
+=== BlueWorx Labs | Hiraste Travel ===
 Contributors: blueworx
 Tags: elementor, search, property, filters
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.3.17
+Stable tag: 0.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Adds BlueWorx Hiraste property search enhancements for Elementor and WordPress.
+Hiraste Travel enhancements for Elementor and WordPress: property search, results, taxonomy ordering, and favourites.
 
 == Description ==
 
-BlueWorx Hiraste Enhancements adds Elementor widgets for property search, filtered property results, and related property items.
+BlueWorx Labs | Hiraste Travel adds Elementor widgets for property search, filtered property results, and related property items.
 
 Current enhancements include:
 
@@ -24,15 +24,27 @@ Current enhancements include:
 * Property related items widget for reviews and units with grid and carousel layouts.
 * Property amenities widget using an Elementor Loop Item template with amenity icons.
 * Drag-and-drop taxonomy ordering for destinations, collections, and amenities.
+* Property favourites button shortcode saving to the ACF user field.
+* Property count heading for search results and archives.
+* Unit popup that loads the clicked unit's Elementor template.
+* Read more toggle for long text blocks.
 * Active Enhancements admin information page.
 
 == Installation ==
 
 1. Upload the plugin folder to the WordPress plugins directory.
-2. Activate BlueWorx Hiraste Enhancements in WordPress admin.
+2. Activate BlueWorx Labs | Hiraste Travel in WordPress admin.
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.5.0 =
+* Moved the property count, unit popup, and read more features into the plugin (previously code snippets).
+
+= 0.4.0 =
+* Renamed plugin to BlueWorx Labs | Hiraste Travel.
+* Moved the property favourites button into the plugin (previously a code snippet).
+* Favourites CSS and JS now load from plugin assets only on pages using the button.
 
 = 0.3.17 =
 * Added drag-and-drop backend ordering for destinations, collections, and amenities.

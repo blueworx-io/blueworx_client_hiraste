@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: BlueWorx Hiraste Enhancements
- * Description: Adds Elementor widgets for Hiraste property search, filtered property results, and related property items.
- * Version: 0.3.17
- * Author: ChatGPT
+ * Plugin Name: BlueWorx Labs | Hiraste Travel
+ * Description: Hiraste Travel enhancements: Elementor property search widgets, filtered results, related items, taxonomy ordering, and property favourites.
+ * Version: 0.5.0
+ * Author: BlueWorx Labs
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Requires at least: 6.0
@@ -13,7 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SL_ESF_VERSION', '0.3.17' );
+define( 'SL_ESF_VERSION', '0.5.0' );
 define( 'SL_ESF_PLUGIN_FILE', __FILE__ );
 define( 'SL_ESF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SL_ESF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -25,6 +25,15 @@ final class SL_ESF_Plugin {
 	}
 
 	public function init() {
+		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-favourites.php';
+		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-property-count.php';
+		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-unit-popup.php';
+		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-read-more.php';
+		new SL_ESF_Favourites();
+		new SL_ESF_Property_Count();
+		new SL_ESF_Unit_Popup();
+		new SL_ESF_Read_More();
+
 		add_action( 'elementor/widgets/register', [ $this, 'register_widget' ] );
 		add_action( 'elementor/frontend/after_register_scripts', [ $this, 'register_assets' ] );
 		add_action( 'elementor/frontend/widget/before_render', [ $this, 'start_loop_grid_term_filtering' ] );
@@ -282,6 +291,22 @@ final class SL_ESF_Plugin {
 			[
 				'title' => __( 'Taxonomy Ordering', 'blueworx-hiraste-enhancements' ),
 				'body'  => __( 'Adds drag-and-drop ordering for destinations, collections, and amenities in WordPress admin.', 'blueworx-hiraste-enhancements' ),
+			],
+			[
+				'title' => __( 'Property Favourites', 'blueworx-hiraste-enhancements' ),
+				'body'  => __( 'Adds the [favourite_button] shortcode so logged-in users can save properties to the ACF "favourites" field on their user profile.', 'blueworx-hiraste-enhancements' ),
+			],
+			[
+				'title' => __( 'Property Count', 'blueworx-hiraste-enhancements' ),
+				'body'  => __( 'Adds the [tax_post_count] shortcode showing how many properties match on search results and archives.', 'blueworx-hiraste-enhancements' ),
+			],
+			[
+				'title' => __( 'Unit Popup', 'blueworx-hiraste-enhancements' ),
+				'body'  => __( 'Adds the [unit_popup_container] shortcode and loads the clicked unit\'s Elementor template into the unit popup.', 'blueworx-hiraste-enhancements' ),
+			],
+			[
+				'title' => __( 'Read More Toggle', 'blueworx-hiraste-enhancements' ),
+				'body'  => __( 'Trims any block with the read_more_text CSS class to 400 characters with a Read more link.', 'blueworx-hiraste-enhancements' ),
 			],
 		];
 		?>

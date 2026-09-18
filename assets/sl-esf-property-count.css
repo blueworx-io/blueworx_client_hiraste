@@ -1,0 +1,21 @@
+.archive_count_wrap {
+	text-align: center;
+}
+
+.archive_count_h3 {
+	color: var(--e-global-color-uicore_primary) !important;
+	font-family: var(--uicore-typography--h3-f, "Inter");
+	font-weight: var(--uicore-typography--h3-w, "600");
+	line-height: var(--uicore-typography--h3-h, "1.2");
+	letter-spacing: var(--uicore-typography--h3-ls, "-0.027em");
+	text-transform: var(--uicore-typography--h3-t, "none");
+	font-style: var(--uicore-typography--h3-st, "normal");
+	font-size: var(--uicore-typography--h3-s, "10px");
+	top: 4px;
+	position: relative;
+}
+
+.archive_count_text {
+	padding-top: 20px;
+	text-align: center;
+}

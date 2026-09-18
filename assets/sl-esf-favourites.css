@@ -1,0 +1,33 @@
+.sl-favourite-btn {
+	background: none;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+	line-height: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sl-favourite-btn img {
+	width: 30px;
+	height: 30px;
+	display: block;
+	opacity: 0.45;
+	transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+}
+
+.sl-favourite-btn:hover img {
+	opacity: 0.7;
+	transform: scale(1.05);
+}
+
+.sl-favourite-btn.is-active img {
+	opacity: 1;
+	filter: brightness(0) saturate(100%) invert(18%) sepia(96%) saturate(7491%) hue-rotate(347deg) brightness(98%) contrast(100%);
+}
+
+.sl-favourite-btn.is-loading {
+	pointer-events: none;
+	opacity: 0.7;
+}
