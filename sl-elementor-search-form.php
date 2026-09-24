@@ -2,7 +2,7 @@
 /**
  * Plugin Name: BlueWorx Labs | Hiraste Travel
  * Description: Hiraste Travel enhancements: Elementor property search widgets, filtered results, related items, taxonomy ordering, and property favourites.
- * Version: 0.5.0
+ * Version: 0.6.0
  * Author: BlueWorx Labs
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SL_ESF_VERSION', '0.5.0' );
+define( 'SL_ESF_VERSION', '0.6.0' );
 define( 'SL_ESF_PLUGIN_FILE', __FILE__ );
 define( 'SL_ESF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SL_ESF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -29,10 +29,12 @@ final class SL_ESF_Plugin {
 		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-property-count.php';
 		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-unit-popup.php';
 		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-read-more.php';
+		require_once SL_ESF_PLUGIN_DIR . 'includes/class-sl-esf-unit-property-backfill.php';
 		new SL_ESF_Favourites();
 		new SL_ESF_Property_Count();
 		new SL_ESF_Unit_Popup();
 		new SL_ESF_Read_More();
+		new SL_ESF_Unit_Property_Backfill();
 
 		add_action( 'elementor/widgets/register', [ $this, 'register_widget' ] );
 		add_action( 'elementor/frontend/after_register_scripts', [ $this, 'register_assets' ] );
@@ -307,6 +309,10 @@ final class SL_ESF_Plugin {
 			[
 				'title' => __( 'Read More Toggle', 'blueworx-hiraste-enhancements' ),
 				'body'  => __( 'Trims any block with the read_more_text CSS class to 400 characters with a Read more link.', 'blueworx-hiraste-enhancements' ),
+			],
+			[
+				'title' => __( 'Unit Property Fill-In', 'blueworx-hiraste-enhancements' ),
+				'body'  => __( 'Runs once to fill each unit\'s Property field from the units already listed on its property.', 'blueworx-hiraste-enhancements' ),
 			],
 		];
 		?>

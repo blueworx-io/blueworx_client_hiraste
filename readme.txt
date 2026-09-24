@@ -4,7 +4,7 @@ Tags: elementor, search, property, filters
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.5.0
+Stable tag: 0.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,7 @@ Current enhancements include:
 * Property count heading for search results and archives.
 * Unit popup that loads the clicked unit's Elementor template.
 * Read more toggle for long text blocks.
+* One-off fill-in of each unit's Property field from its property.
 * Active Enhancements admin information page.
 
 == Installation ==
@@ -37,6 +38,9 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.6.0 =
+* Units now show which property they belong to, filled in automatically from each property's unit list.
 
 = 0.5.0 =
 * Moved the property count, unit popup, and read more features into the plugin (previously code snippets).
