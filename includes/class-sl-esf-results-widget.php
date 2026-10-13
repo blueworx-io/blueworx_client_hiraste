@@ -389,7 +389,9 @@ class SL_ESF_Results_Widget extends Widget_Base {
 		}
 
 		$links = paginate_links([
-			'base'      => str_replace( 999999999, '%#%', esc_url( get_pagenum_link( 999999999 ) ) ),
+			// Unescaped here: paginate_links() escapes each link itself, and an already-escaped
+			// base turns "&" into "&#038;", which breaks the added query args into a fragment.
+			'base'      => str_replace( 999999999, '%#%', get_pagenum_link( 999999999, false ) ),
 			'format'    => '',
 			'current'   => $this->get_current_page(),
 			'total'     => $query->max_num_pages,
