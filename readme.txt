@@ -4,7 +4,7 @@ Tags: elementor, search, property, filters
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.6.0
+Stable tag: 0.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,9 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.7.0 =
+* Search results now show in a shuffled order for each search, so no property is always at the top. Paging through results never repeats or skips a property.
 
 = 0.6.0 =
 * Units now show which property they belong to, filled in automatically from each property's unit list.

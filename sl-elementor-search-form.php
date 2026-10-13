@@ -2,7 +2,7 @@
 /**
  * Plugin Name: BlueWorx Labs | Hiraste Travel
  * Description: Hiraste Travel enhancements: Elementor property search widgets, filtered results, related items, taxonomy ordering, and property favourites.
- * Version: 0.6.0
+ * Version: 0.7.0
  * Author: BlueWorx Labs
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SL_ESF_VERSION', '0.6.0' );
+define( 'SL_ESF_VERSION', '0.7.0' );
 define( 'SL_ESF_PLUGIN_FILE', __FILE__ );
 define( 'SL_ESF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SL_ESF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -280,7 +280,7 @@ final class SL_ESF_Plugin {
 			],
 			[
 				'title' => __( 'Enhanced Property Results Widget', 'blueworx-hiraste-enhancements' ),
-				'body'  => __( 'Adds an Elementor widget that renders filtered property results using a selected Elementor Loop Item template.', 'blueworx-hiraste-enhancements' ),
+				'body'  => __( 'Adds an Elementor widget that renders filtered property results using a selected Elementor Loop Item template, shuffled for each search.', 'blueworx-hiraste-enhancements' ),
 			],
 			[
 				'title' => __( 'Property Related Items Widget', 'blueworx-hiraste-enhancements' ),
@@ -359,6 +359,22 @@ function blueworx_hiraste_enhancements_clean_int_array( $value ) {
 	}
 
 	return array_values( array_filter( array_map( 'absint', $value ) ) );
+}
+
+/**
+ * Seed for the shuffled results order. The search form adds a fresh one to each
+ * search and pagination carries it, so pages never repeat or skip a property.
+ * Without one, the order changes daily so cached pages stay consistent.
+ */
+function sl_esf_get_shuffle_seed() {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public search query, sanitized before use.
+	$seed = isset( $_GET['shuffle'] ) && ! is_array( $_GET['shuffle'] ) ? absint( wp_unslash( $_GET['shuffle'] ) ) : 0;
+
+	if ( $seed < 1 || $seed > 999999 ) {
+		$seed = absint( wp_date( 'Ymd' ) );
+	}
+
+	return $seed;
 }
 
 function blueworx_hiraste_enhancements_get_search_request() {

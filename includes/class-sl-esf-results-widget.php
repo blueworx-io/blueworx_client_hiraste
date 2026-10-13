@@ -115,6 +115,20 @@ class SL_ESF_Results_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
+			'order',
+			[
+				'label'       => __( 'Order', 'blueworx-hiraste-enhancements' ),
+				'type'        => Controls_Manager::SELECT,
+				'options'     => [
+					'shuffle' => __( 'Shuffled', 'blueworx-hiraste-enhancements' ),
+					'newest'  => __( 'Newest First', 'blueworx-hiraste-enhancements' ),
+				],
+				'default'     => 'shuffle',
+				'description' => __( 'Shuffled gives each search its own order, kept the same across pages.', 'blueworx-hiraste-enhancements' ),
+			]
+		);
+
+		$this->add_control(
 			'no_results_message',
 			[
 				'label'   => __( 'No Results Message', 'blueworx-hiraste-enhancements' ),
@@ -161,7 +175,12 @@ class SL_ESF_Results_Widget extends Widget_Base {
 			return;
 		}
 
-		$query = new WP_Query( $this->get_query_args( $posts_per_page ) );
+		$query_args = $this->get_query_args( $posts_per_page );
+		if ( ( $settings['order'] ?? 'shuffle' ) === 'shuffle' && function_exists( 'sl_esf_get_shuffle_seed' ) ) {
+			$query_args['orderby'] = 'RAND(' . sl_esf_get_shuffle_seed() . ')';
+		}
+
+		$query = new WP_Query( $query_args );
 
 		if ( ! $query->have_posts() ) {
 			$this->render_notice( $no_results_message );

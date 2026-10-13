@@ -210,10 +210,19 @@
 			});
 		}
 
-		// Ensure WordPress treats it as a search request
+		// Ensure WordPress treats it as a search request, and give each search its own shuffled order
 		form.addEventListener('submit', function(){
 			const sInput = form.querySelector('input[name="s"]');
 			if (sInput) sInput.value = '';
+
+			let shuffleInput = form.querySelector('input[name="shuffle"]');
+			if (!shuffleInput) {
+				shuffleInput = document.createElement('input');
+				shuffleInput.type = 'hidden';
+				shuffleInput.name = 'shuffle';
+				form.appendChild(shuffleInput);
+			}
+			shuffleInput.value = String(Math.floor(Math.random() * 999999) + 1);
 		});
 
 		// Seed default units
