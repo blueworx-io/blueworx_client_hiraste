@@ -4,7 +4,7 @@ Tags: elementor, search, property, filters
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.7.0
+Stable tag: 0.8.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,7 @@ Current enhancements include:
 * Read more toggle for long text blocks.
 * One-off fill-in of each unit's Property field from its property.
 * Active Enhancements admin information page.
+* Automatic updates from GitHub releases.
 
 == Installation ==
 
@@ -38,6 +39,9 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.8.0 =
+* The plugin now updates itself from new releases, like the other BlueWorx plugins.
 
 = 0.7.0 =
 * Search results now show in a shuffled order for each search, so no property is always at the top. Paging through results never repeats or skips a property.

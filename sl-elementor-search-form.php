@@ -2,7 +2,7 @@
 /**
  * Plugin Name: BlueWorx Labs | Hiraste Travel
  * Description: Hiraste Travel enhancements: Elementor property search widgets, filtered results, related items, taxonomy ordering, and property favourites.
- * Version: 0.7.0
+ * Version: 0.8.0
  * Author: BlueWorx Labs
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,10 +13,37 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SL_ESF_VERSION', '0.7.0' );
+define( 'SL_ESF_VERSION', '0.8.0' );
 define( 'SL_ESF_PLUGIN_FILE', __FILE__ );
 define( 'SL_ESF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SL_ESF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+
+require_once SL_ESF_PLUGIN_DIR . 'plugin-update-checker/plugin-update-checker.php';
+
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+// The site updates itself from this repo's GitHub Releases. The third argument
+// must equal the installed folder name and the release workflow's plugin_slug;
+// if they disagree, WordPress installs the update as a second copy.
+$sl_esf_update_checker = PucFactory::buildUpdateChecker(
+	'https://github.com/blueworx-io/blueworx_client_hiraste/',
+	__FILE__,
+	'blueworx_hiraste_enhancements'
+);
+
+/*
+ * The repo is private, so the site needs a token to see releases. It lives in
+ * wp-config.php — never in the plugin, never in the repo:
+ *
+ *     define( 'BLUEWORX_PLUGIN_UPDATE_TOKEN', 'github_pat_...' );
+ */
+if ( defined( 'BLUEWORX_PLUGIN_UPDATE_TOKEN' ) && BLUEWORX_PLUGIN_UPDATE_TOKEN ) {
+	$sl_esf_update_checker->setAuthentication( BLUEWORX_PLUGIN_UPDATE_TOKEN );
+}
+
+// Install the zip attached to the Release, not GitHub's source tarball, whose
+// folder name WordPress would treat as a different plugin.
+$sl_esf_update_checker->getVcsApi()->enableReleaseAssets();
 
 final class SL_ESF_Plugin {
 

@@ -1,0 +1,15 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+jobs:
+  release:
+    uses: blueworx-io/bluegroup_core_foundation/.github/workflows/release-wordpress.yml@v1
+    with:
+      # The folder installed on hiraste.com — must match the update checker's slug.
+      plugin_slug: blueworx_hiraste_enhancements
+      foundation_ref: v1
+      exclude_paths: |
+        /.playwright-mcp
+    permissions:
+      contents: write
