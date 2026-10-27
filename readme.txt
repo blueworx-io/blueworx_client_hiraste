@@ -4,7 +4,7 @@ Tags: elementor, search, property, filters
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.8.1
+Stable tag: 0.9.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,7 @@ Current enhancements include:
 * Property count heading for search results and archives.
 * Unit popup that loads the clicked unit's Elementor template.
 * Read more toggle for long text blocks.
+* Ad-free property map on search results and property pages.
 * One-off fill-in of each unit's Property field from its property.
 * Active Enhancements admin information page.
 * Automatic updates from GitHub releases.
@@ -39,6 +40,9 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.9.0 =
+* Properties now show their own map with no adverts, using OpenStreetMap. On search results, "View on map" slides the map open under the property. On a property page, add the [property_map] shortcode where the map should go; "View on map" there scrolls down to it.
 
 = 0.8.1 =
 * Fixed messy page links on search results.

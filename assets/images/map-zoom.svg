@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="44" height="88" viewBox="0 0 44 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Zoom-controls">
+<path id="Vector" d="M44 0H0V88H44V0Z" fill="#F7F2EC"/>
+<path id="Vector_2" d="M11 22H22M22 22H33M22 22V11M22 22V33M11 66H33" stroke-width="2" stroke="#255A6B"/>
+<g id="Vector_3">
+<path d="M7 44H37Z" fill="black"/>
+<path d="M7 44H37" stroke="#255A6B" stroke-opacity="0.2"/>
+</g>
+</g>
+</svg>

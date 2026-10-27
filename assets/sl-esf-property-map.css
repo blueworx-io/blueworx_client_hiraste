@@ -1,0 +1,156 @@
+.sl-esf-map {
+	--sl-esf-map-ink: #255a6b;
+	--sl-esf-map-paper: #f7f2ec;
+	font-family: "Nunito Sans", sans-serif;
+	color: var(--sl-esf-map-ink);
+}
+.sl-esf-map * { box-sizing: border-box; }
+.sl-esf-map p { margin: 0; }
+
+/* Under a search result card: slides open, sharing the card's border. */
+.sl-esf-map--collapsible {
+	border: 1px solid var(--sl-esf-map-ink);
+	border-top: 0;
+	overflow: hidden;
+	transition: height .4s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+	.sl-esf-map--collapsible { transition: none; }
+}
+
+.sl-esf-map__preview {
+	position: relative;
+	height: 430px;
+	background: var(--sl-esf-map-paper);
+}
+.sl-esf-map__preview:fullscreen { height: 100%; }
+.sl-esf-map.is-expanded .sl-esf-map__preview {
+	position: fixed;
+	inset: 0;
+	z-index: 99999;
+	height: auto;
+}
+.sl-esf-map__canvas {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background: var(--sl-esf-map-paper);
+	font-family: inherit;
+}
+
+/* Map buttons: the design's own icons, with the theme's button styles cleared. */
+.sl-esf-map button {
+	display: block;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+	min-height: 0;
+	cursor: pointer;
+}
+.sl-esf-map button:focus-visible { outline: 2px solid var(--sl-esf-map-ink); outline-offset: 2px; }
+.sl-esf-map__expand,
+.sl-esf-map__zoom {
+	position: absolute;
+	right: 20px;
+	z-index: 1000;
+	width: 44px;
+}
+.sl-esf-map__expand { top: 20px; height: 44px; }
+.sl-esf-map__zoom { bottom: 44px; height: 88px; }
+.sl-esf-map__expand img,
+.sl-esf-map__zoom img { display: block; width: 44px; height: auto; max-width: none; }
+.sl-esf-map__zoom button {
+	position: absolute;
+	left: 0;
+	width: 44px;
+	height: 44px;
+}
+.sl-esf-map__zoom-in { top: 0; }
+.sl-esf-map__zoom-out { top: 44px; }
+
+.sl-esf-map__attribution {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	z-index: 1000;
+	height: 24px;
+	padding: 3px 12px 3px 27px;
+	background: rgba(255, 255, 255, .94);
+	font-size: 13px;
+	font-weight: 700;
+	line-height: 18px;
+	white-space: nowrap;
+}
+.sl-esf-map__attribution a { color: inherit; text-decoration: none; }
+
+/* Pin with the property name above it. */
+.sl-esf-map__marker { background: none; border: 0; }
+.sl-esf-map__marker > div { position: relative; width: 58px; height: 58px; }
+.sl-esf-map__pin { display: block; width: 58px; height: 58px; max-width: none; }
+.sl-esf-map__label {
+	position: absolute;
+	bottom: calc(100% + 21px);
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 13px 42px;
+	border: 1px solid var(--sl-esf-map-ink);
+	background: var(--sl-esf-map-paper);
+	color: var(--sl-esf-map-ink);
+	font-family: "Nunito Sans", sans-serif;
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 25px;
+	white-space: nowrap;
+	text-align: center;
+}
+
+.sl-esf-map__info {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	min-height: 98px;
+	padding: 19px 47px 19px 28px;
+	background: var(--sl-esf-map-paper);
+}
+.sl-esf-map__title {
+	font-family: "Merriweather", serif;
+	font-size: 22px;
+	font-weight: 400;
+	line-height: 28px;
+}
+.sl-esf-map .sl-esf-map__area {
+	margin-top: 7px;
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 25px;
+}
+.sl-esf-map__directions {
+	display: inline-flex;
+	align-items: center;
+	gap: 17px;
+	flex-shrink: 0;
+	color: var(--sl-esf-map-ink);
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 19px;
+	text-transform: uppercase;
+	text-decoration: none;
+}
+.sl-esf-map__directions:hover,
+.sl-esf-map__directions:focus { color: var(--sl-esf-map-ink); text-decoration: underline; }
+.sl-esf-map__directions img { display: block; width: 14.2803px; height: 14.2803px; max-width: none; }
+
+@media (max-width: 767px) {
+	.sl-esf-map__preview { height: 320px; }
+	.sl-esf-map__label { padding: 9px 20px; font-size: 16px; line-height: 22px; }
+	.sl-esf-map__info {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 14px;
+		padding: 19px 20px;
+	}
+}

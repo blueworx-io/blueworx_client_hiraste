@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Property-marker">
+<path id="Vector" d="M29 58C45.0163 58 58 45.0163 58 29C58 12.9837 45.0163 0 29 0C12.9837 0 0 12.9837 0 29C0 45.0163 12.9837 58 29 58Z" fill="#F7F2EC"/>
+<path id="Vector_2" d="M29 54C42.8071 54 54 42.8071 54 29C54 15.1929 42.8071 4 29 4C15.1929 4 4 15.1929 4 29C4 42.8071 15.1929 54 29 54Z" fill="#255A6B"/>
+<g id="Frame">
+<path id="Vector_3" d="M43.25 25.8333C43.25 36.9166 29 46.4166 29 46.4166C29 46.4166 14.75 36.9166 14.75 25.8333C14.75 22.054 16.2513 18.4294 18.9237 15.757C21.5961 13.0847 25.2207 11.5833 29 11.5833C32.7793 11.5833 36.4039 13.0847 39.0763 15.757C41.7487 18.4294 43.25 22.054 43.25 25.8333Z" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke="#F7F2EC"/>
+<path id="Vector_4" d="M29 30.5833C31.6234 30.5833 33.75 28.4567 33.75 25.8333C33.75 23.21 31.6234 21.0833 29 21.0833C26.3766 21.0833 24.25 23.21 24.25 25.8333C24.25 28.4567 26.3766 30.5833 29 30.5833Z" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke="#F7F2EC"/>
+</g>
+</g>
+</svg>

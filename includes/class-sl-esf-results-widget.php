@@ -194,6 +194,9 @@ class SL_ESF_Results_Widget extends Widget_Base {
 			$query->the_post();
 			echo '<article class="sl-esf-results__item">';
 			echo $this->render_loop_item_template( $template_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Elementor returns rendered template HTML.
+			if ( class_exists( 'SL_ESF_Property_Map' ) ) {
+				echo SL_ESF_Property_Map::render( get_the_ID(), true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped while building.
+			}
 			echo '</article>';
 		}
 		echo '</div>';
