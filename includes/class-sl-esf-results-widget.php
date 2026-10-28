@@ -256,6 +256,7 @@ class SL_ESF_Results_Widget extends Widget_Base {
 			$search_term = sanitize_text_field( wp_unslash( $_GET['s'] ) );
 			if ( $search_term !== '' ) {
 				$args['s'] = $search_term;
+				$args['search_columns'] = [ 'post_title' ];
 			}
 		}
 

@@ -188,6 +188,7 @@
 					if (el.type === 'checkbox') el.checked = false;
 					else if (el.tagName === 'SELECT') el.value = '';
 					else if (el.type === 'hidden' && el.name === 'unit_boxes') el.value = '';
+					else if (el.name === 's') el.value = '';
 				});
 
 				// Clear dynamic units
@@ -210,11 +211,8 @@
 			});
 		}
 
-		// Ensure WordPress treats it as a search request, and give each search its own shuffled order
+		// Give each search its own shuffled order
 		form.addEventListener('submit', function(){
-			const sInput = form.querySelector('input[name="s"]');
-			if (sInput) sInput.value = '';
-
 			let shuffleInput = form.querySelector('input[name="shuffle"]');
 			if (!shuffleInput) {
 				shuffleInput = document.createElement('input');

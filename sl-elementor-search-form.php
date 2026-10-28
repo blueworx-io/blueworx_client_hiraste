@@ -2,18 +2,18 @@
 /**
  * Plugin Name: BlueWorx Labs | Hiraste Travel
  * Description: Hiraste Travel enhancements: Elementor property search widgets, filtered results, related items, taxonomy ordering, and property favourites.
- * Version: 0.9.0
+ * Version: 0.10.0
  * Author: BlueWorx Labs
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Requires at least: 6.0
+ * Requires at least: 6.2
  * Requires PHP: 7.4
  * Text Domain: blueworx-hiraste-enhancements
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SL_ESF_VERSION', '0.9.0' );
+define( 'SL_ESF_VERSION', '0.10.0' );
 define( 'SL_ESF_PLUGIN_FILE', __FILE__ );
 define( 'SL_ESF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SL_ESF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -289,7 +289,7 @@ final class SL_ESF_Plugin {
 		$features = [
 			[
 				'title' => __( 'Elementor Property Search Form', 'blueworx-hiraste-enhancements' ),
-				'body'  => __( 'Adds an Elementor widget for property search with destination, guests, units, and advanced filters.', 'blueworx-hiraste-enhancements' ),
+				'body'  => __( 'Adds an Elementor widget for property search by name, destination, guests, units, and advanced filters.', 'blueworx-hiraste-enhancements' ),
 			],
 			[
 				'title' => __( 'Destination, Collection, and Amenity Filters', 'blueworx-hiraste-enhancements' ),
@@ -651,8 +651,9 @@ add_action( 'pre_get_posts', function( $q ) {
 	if ( is_admin() || ! $q->is_main_query() ) return;
 	if ( ! $q->is_search() ) return;
 
-	// Force search to return properties.
+	// Force search to return properties, matching the typed text against names only.
 	$q->set( 'post_type', [ 'property' ] );
+	$q->set( 'search_columns', [ 'post_title' ] );
 	$search_request = blueworx_hiraste_enhancements_get_search_request();
 
 	$tax_query = blueworx_hiraste_enhancements_build_tax_query( $search_request );
