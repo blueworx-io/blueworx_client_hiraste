@@ -26,6 +26,12 @@ class SL_ESF_Widget extends Widget_Base {
 		);
 
 		$this->add_control(
+			'placeholder_name',
+			[ 'label' => __( 'Property Name Placeholder', 'blueworx-hiraste-enhancements' ), 'type' => Controls_Manager::TEXT,
+			  'default' => __( 'Search by property name', 'blueworx-hiraste-enhancements' ) ]
+		);
+
+		$this->add_control(
 			'search_button_label',
 			[ 'label' => __( 'Button Label', 'blueworx-hiraste-enhancements' ), 'type' => Controls_Manager::TEXT,
 			  'default' => __( 'SEARCH', 'blueworx-hiraste-enhancements' ) ]
@@ -78,6 +84,9 @@ class SL_ESF_Widget extends Widget_Base {
 		if ( $destination_placeholder === '' ) {
 			$destination_placeholder = __( 'All destinations', 'blueworx-hiraste-enhancements' );
 		}
+		$name_placeholder = trim( (string) ( $settings['placeholder_name'] ?? '' ) );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public search query, sanitized before use.
+		$name_value = isset( $_GET['s'] ) && ! is_array( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
 
 		$dest_terms = get_terms([
 			'taxonomy' => 'destinations',
@@ -96,6 +105,14 @@ class SL_ESF_Widget extends Widget_Base {
 				<input type="hidden" name="post_type" value="property" />
 
 				<div class="sl-esf__basic">
+					<div class="sl-esf__field sl-esf__field--name">
+						<label class="sl-esf__label" for="<?php echo esc_attr( $uid ); ?>-name">Property name</label>
+						<!-- WP search needs 's' to be a search request; it matches property names only. -->
+						<input type="search" id="<?php echo esc_attr( $uid ); ?>-name" class="sl-esf__input" name="s"
+							   value="<?php echo esc_attr( $name_value ); ?>"
+							   placeholder="<?php echo esc_attr( $name_placeholder ); ?>" />
+					</div>
+
 					<div class="sl-esf__field sl-esf__field--select sl-esf__field--destination">
 						<label class="sl-esf__label" for="<?php echo esc_attr( $uid ); ?>-destination-term">Destination</label>
 						<select id="<?php echo esc_attr( $uid ); ?>-destination-term" class="sl-esf__select" name="destination_term">
@@ -207,9 +224,6 @@ class SL_ESF_Widget extends Widget_Base {
 
 					</div>
 				</div>
-
-				<!-- WP search needs 's' to be a search request. We keep it empty so Elementor still treats it as search. -->
-				<input type="hidden" name="s" value="" />
 			</form>
 
 			<template data-sl-esf-unit-template>

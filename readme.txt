@@ -1,10 +1,10 @@
 === BlueWorx Labs | Hiraste Travel ===
 Contributors: blueworx
 Tags: elementor, search, property, filters
-Requires at least: 6.0
+Requires at least: 6.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.9.0
+Stable tag: 0.10.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,6 +40,9 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.10.0 =
+* Visitors can now search for a property by name. Type all or part of a name into the new box on the search form; it works alongside the other filters and only searches properties.
 
 = 0.9.0 =
 * Properties now show their own map with no adverts, using OpenStreetMap. On search results, "View on map" slides the map open under the property. On a property page, add the [property_map] shortcode where the map should go; "View on map" there scrolls down to it.
