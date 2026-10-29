@@ -23,6 +23,12 @@
 	font-size: 14px;
 }
 
+/* Name box shares the dropdowns' look (including the site's own styling of them) */
+.sl-esf__select.sl-esf__select--text { cursor: text; }
+.sl-esf__select--text::placeholder { color: inherit; opacity: 1; }
+/* The theme sets its own font on every input, so restate the dropdowns' lettering */
+.sl-esf input.sl-esf__select--text { font-weight: 700; text-transform: uppercase; letter-spacing: .05em; font-size: 14px; }
+
 .sl-esf__field--submit{display:flex; gap:10px;}
 
 .sl-esf__button {

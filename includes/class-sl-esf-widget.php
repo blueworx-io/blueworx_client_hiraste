@@ -108,7 +108,7 @@ class SL_ESF_Widget extends Widget_Base {
 					<div class="sl-esf__field sl-esf__field--name">
 						<label class="sl-esf__label" for="<?php echo esc_attr( $uid ); ?>-name">Property name</label>
 						<!-- WP search needs 's' to be a search request; it matches property names only. -->
-						<input type="search" id="<?php echo esc_attr( $uid ); ?>-name" class="sl-esf__input" name="s"
+						<input type="search" id="<?php echo esc_attr( $uid ); ?>-name" class="sl-esf__select sl-esf__select--text" name="s"
 							   value="<?php echo esc_attr( $name_value ); ?>"
 							   placeholder="<?php echo esc_attr( $name_placeholder ); ?>" />
 					</div>

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: BlueWorx Labs | Hiraste Travel
  * Description: Hiraste Travel enhancements: Elementor property search widgets, filtered results, related items, taxonomy ordering, and property favourites.
- * Version: 0.10.0
+ * Version: 0.10.1
  * Author: BlueWorx Labs
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SL_ESF_VERSION', '0.10.0' );
+define( 'SL_ESF_VERSION', '0.10.1' );
 define( 'SL_ESF_PLUGIN_FILE', __FILE__ );
 define( 'SL_ESF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SL_ESF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
