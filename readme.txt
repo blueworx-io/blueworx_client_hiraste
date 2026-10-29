@@ -4,7 +4,7 @@ Tags: elementor, search, property, filters
 Requires at least: 6.2
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 0.10.1
+Stable tag: 0.11.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,6 +40,9 @@ Current enhancements include:
 3. Add the Search Form widget in Elementor.
 
 == Changelog ==
+
+= 0.11.0 =
+* The name box and destination dropdown are now one "Where would you like to go?" box. After 3 letters it lists matching destinations and properties; picking one goes straight to its page. Pressing Search shows properties whose name matches plus every property in a matching destination.
 
 = 0.10.1 =
 * The property name box now looks the same as the rest of the search form.

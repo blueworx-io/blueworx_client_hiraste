@@ -2,7 +2,7 @@
 /**
  * Plugin Name: BlueWorx Labs | Hiraste Travel
  * Description: Hiraste Travel enhancements: Elementor property search widgets, filtered results, related items, taxonomy ordering, and property favourites.
- * Version: 0.10.1
+ * Version: 0.11.0
  * Author: BlueWorx Labs
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'SL_ESF_VERSION', '0.10.1' );
+define( 'SL_ESF_VERSION', '0.11.0' );
 define( 'SL_ESF_PLUGIN_FILE', __FILE__ );
 define( 'SL_ESF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SL_ESF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -289,7 +289,7 @@ final class SL_ESF_Plugin {
 		$features = [
 			[
 				'title' => __( 'Elementor Property Search Form', 'blueworx-hiraste-enhancements' ),
-				'body'  => __( 'Adds an Elementor widget for property search by name, destination, guests, units, and advanced filters.', 'blueworx-hiraste-enhancements' ),
+				'body'  => __( 'Adds an Elementor widget for property search with a where box (suggesting destinations and properties), guests, units, and advanced filters.', 'blueworx-hiraste-enhancements' ),
 			],
 			[
 				'title' => __( 'Destination, Collection, and Amenity Filters', 'blueworx-hiraste-enhancements' ),
@@ -446,6 +446,104 @@ function blueworx_hiraste_enhancements_get_search_request() {
 
 	return $data;
 }
+
+/**
+ * Text typed into the search form's "Where" box.
+ */
+function sl_esf_get_search_text() {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public search query, sanitized before use.
+	return isset( $_GET['s'] ) && ! is_array( $_GET['s'] ) ? trim( sanitize_text_field( wp_unslash( $_GET['s'] ) ) ) : '';
+}
+
+function sl_esf_find_matching_destination_ids( $text, $limit = 0 ) {
+	$term_ids = get_terms([
+		'taxonomy'   => 'destinations',
+		'name__like' => $text,
+		'hide_empty' => false,
+		'fields'     => 'ids',
+		'number'     => $limit,
+	]);
+
+	return is_wp_error( $term_ids ) ? [] : array_map( 'intval', $term_ids );
+}
+
+function sl_esf_find_name_matching_property_ids( $text, $limit = -1 ) {
+	return array_map( 'intval', get_posts([
+		'post_type'      => 'property',
+		'post_status'    => 'publish',
+		'posts_per_page' => $limit,
+		'fields'         => 'ids',
+		's'              => $text,
+		'search_columns' => [ 'post_title' ],
+		'orderby'        => 'title',
+		'order'          => 'ASC',
+		'no_found_rows'  => true,
+	]) );
+}
+
+/**
+ * Properties the typed text matches: by name, or by being in a destination whose name matches.
+ */
+function sl_esf_find_text_matching_property_ids( $text ) {
+	$property_ids = sl_esf_find_name_matching_property_ids( $text );
+
+	$destination_ids = sl_esf_find_matching_destination_ids( $text );
+	if ( ! empty( $destination_ids ) ) {
+		$property_ids = array_merge( $property_ids, get_posts([
+			'post_type'      => 'property',
+			'post_status'    => 'publish',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+			'tax_query'      => [[
+				'taxonomy' => 'destinations',
+				'field'    => 'term_id',
+				'terms'    => $destination_ids,
+			]],
+		]) );
+	}
+
+	return array_values( array_unique( array_map( 'intval', $property_ids ) ) );
+}
+
+// Suggestions for the "Where" box: matching destinations, then matching properties.
+add_action( 'rest_api_init', function() {
+	register_rest_route( 'sl-esf/v1', '/suggest', [
+		'methods'             => 'GET',
+		'permission_callback' => '__return_true',
+		'args'                => [
+			'q' => [ 'type' => 'string', 'required' => true, 'sanitize_callback' => 'sanitize_text_field' ],
+		],
+		'callback'            => function( WP_REST_Request $request ) {
+			$text = trim( (string) $request->get_param( 'q' ) );
+			$suggestions = [ 'destinations' => [], 'properties' => [] ];
+
+			if ( mb_strlen( $text ) < 3 ) {
+				return rest_ensure_response( $suggestions );
+			}
+
+			foreach ( sl_esf_find_matching_destination_ids( $text, 5 ) as $term_id ) {
+				$term = get_term( $term_id, 'destinations' );
+				$url = get_term_link( $term_id, 'destinations' );
+				if ( ! $term || is_wp_error( $term ) || is_wp_error( $url ) ) continue;
+
+				$suggestions['destinations'][] = [
+					'name' => html_entity_decode( $term->name, ENT_QUOTES, 'UTF-8' ),
+					'url'  => $url,
+				];
+			}
+
+			foreach ( sl_esf_find_name_matching_property_ids( $text, 8 ) as $property_id ) {
+				$suggestions['properties'][] = [
+					'name' => html_entity_decode( get_the_title( $property_id ), ENT_QUOTES, 'UTF-8' ),
+					'url'  => get_permalink( $property_id ),
+				];
+			}
+
+			return rest_ensure_response( $suggestions );
+		},
+	]);
+} );
 
 function sl_esf_parse_unit_requirements( $unit_boxes ) {
 	$requirements = [];
@@ -651,14 +749,21 @@ add_action( 'pre_get_posts', function( $q ) {
 	if ( is_admin() || ! $q->is_main_query() ) return;
 	if ( ! $q->is_search() ) return;
 
-	// Force search to return properties, matching the typed text against names only.
+	// Force search to return properties.
 	$q->set( 'post_type', [ 'property' ] );
-	$q->set( 'search_columns', [ 'post_title' ] );
 	$search_request = blueworx_hiraste_enhancements_get_search_request();
 
 	$tax_query = blueworx_hiraste_enhancements_build_tax_query( $search_request );
 	if ( ! empty( $tax_query ) ) {
 		$q->set( 'tax_query', $tax_query );
+	}
+
+	// Typed text matches property and destination names; these ids replace WordPress's own text search.
+	$search_text = sl_esf_get_search_text();
+	if ( $search_text !== '' ) {
+		$text_ids = sl_esf_find_text_matching_property_ids( $search_text );
+		$q->set( 'sl_esf_text_search', true );
+		$q->set( 'post__in', ! empty( $text_ids ) ? $text_ids : [ 0 ] );
 	}
 
 	$raw_unit_boxes = $search_request['unit_boxes'];
@@ -679,3 +784,7 @@ add_action( 'pre_get_posts', function( $q ) {
 
 	$q->set( 'post__in', ! empty( $matching_ids ) ? $matching_ids : [ 0 ] );
 }, 20 );
+
+add_filter( 'posts_search', function( $search, $q ) {
+	return $q->get( 'sl_esf_text_search' ) ? '' : $search;
+}, 10, 2 );

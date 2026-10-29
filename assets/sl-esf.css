@@ -4,7 +4,7 @@
 
 .sl-esf__basic {
 	display: grid;
-	grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
+	grid-template-columns: 2fr 1fr 1fr 1fr;
 	gap: 10px;
 	align-items: end;
 }
@@ -28,6 +28,27 @@
 .sl-esf__select--text::placeholder { color: inherit; opacity: 1; }
 /* The theme sets its own font on every input, so restate the dropdowns' lettering */
 .sl-esf input.sl-esf__select--text { font-weight: 700; text-transform: uppercase; letter-spacing: .05em; font-size: 14px; }
+
+/* Where box suggestions */
+.sl-esf__field--where { position: relative; }
+.sl-esf__suggest {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	z-index: 50;
+	max-height: 360px;
+	overflow-y: auto;
+	background: #F7F2EC;
+	border: 1px solid var(--e-global-color-uicore_secondary, rgba(0,0,0,.15));
+	box-shadow: 0 8px 24px rgba(0,0,0,.12);
+	color: var(--e-global-color-uicore_secondary, inherit);
+}
+.sl-esf__suggest-title { padding: 12px 12px 4px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; opacity: .7; }
+.sl-esf .sl-esf__suggest-option { display: block; padding: 8px 12px; color: inherit; text-decoration: none; font-size: 14px; text-transform: uppercase; }
+.sl-esf .sl-esf__suggest-option:hover,
+.sl-esf .sl-esf__suggest-option[aria-selected="true"] { background: rgba(0,0,0,.06); color: inherit; }
+.sl-esf__suggest-empty { padding: 12px; font-size: 14px; opacity: .7; }
 
 .sl-esf__field--submit{display:flex; gap:10px;}
 

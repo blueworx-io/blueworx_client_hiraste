@@ -211,6 +211,114 @@
 			});
 		}
 
+		// Where box: suggest destinations and properties once 3 letters are typed
+		(function initSuggest(){
+			const input = qs(root, '[data-sl-esf-where]');
+			const list = qs(root, '[data-sl-esf-suggest]');
+			const url = root.getAttribute('data-suggest-url');
+			if (!input || !list || !url) return;
+
+			let timer = null;
+			let controller = null;
+			let active = -1;
+
+			function options(){ return qsa(list, '[data-sl-esf-option]'); }
+
+			function close(){
+				list.hidden = true;
+				input.setAttribute('aria-expanded', 'false');
+				input.removeAttribute('aria-activedescendant');
+				active = -1;
+			}
+
+			function setActive(index){
+				const opts = options();
+				if (!opts.length) return;
+				active = (index + opts.length) % opts.length;
+				opts.forEach(function(opt, n){ opt.setAttribute('aria-selected', n === active ? 'true' : 'false'); });
+				input.setAttribute('aria-activedescendant', opts[active].id);
+				opts[active].scrollIntoView({ block: 'nearest' });
+			}
+
+			function render(data){
+				list.innerHTML = '';
+				let count = 0;
+
+				[['destinations', 'Destinations'], ['properties', 'Properties']].forEach(function(section){
+					const rows = data[section[0]] || [];
+					if (!rows.length) return;
+
+					const title = document.createElement('div');
+					title.className = 'sl-esf__suggest-title';
+					title.setAttribute('role', 'presentation');
+					title.textContent = section[1];
+					list.appendChild(title);
+
+					rows.forEach(function(row){
+						const link = document.createElement('a');
+						link.className = 'sl-esf__suggest-option';
+						link.id = list.id + '-' + count++;
+						link.href = row.url;
+						link.textContent = row.name;
+						link.setAttribute('role', 'option');
+						link.setAttribute('data-sl-esf-option', '');
+						list.appendChild(link);
+					});
+				});
+
+				if (!count) {
+					const empty = document.createElement('div');
+					empty.className = 'sl-esf__suggest-empty';
+					empty.textContent = 'No matching destinations or properties';
+					list.appendChild(empty);
+				}
+
+				active = -1;
+				list.hidden = false;
+				input.setAttribute('aria-expanded', 'true');
+			}
+
+			function lookup(){
+				const text = input.value.trim();
+				if (text.length < 3) { close(); return; }
+
+				if (controller) controller.abort();
+				controller = new AbortController();
+
+				fetch(url + (url.indexOf('?') === -1 ? '?' : '&') + 'q=' + encodeURIComponent(text), {
+					signal: controller.signal,
+					headers: { Accept: 'application/json' }
+				})
+					.then(function(res){ return res.ok ? res.json() : null; })
+					.then(function(data){ if (data && input.value.trim() === text) render(data); })
+					.catch(function(){});
+			}
+
+			input.addEventListener('input', function(){
+				window.clearTimeout(timer);
+				timer = window.setTimeout(lookup, 200);
+			});
+
+			input.addEventListener('focus', function(){
+				if (input.value.trim().length >= 3) lookup();
+			});
+
+			input.addEventListener('keydown', function(e){
+				if (list.hidden) return;
+				if (e.key === 'ArrowDown') { e.preventDefault(); setActive(active + 1); }
+				else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(active - 1); }
+				else if (e.key === 'Enter' && active > -1) { e.preventDefault(); window.location.href = options()[active].href; }
+				else if (e.key === 'Escape') { close(); }
+			});
+
+			document.addEventListener('click', function(e){
+				if (!input.parentNode.contains(e.target)) close();
+			});
+
+			const clearButton = qs(root, '[data-sl-esf-clear]');
+			if (clearButton) clearButton.addEventListener('click', close);
+		})();
+
 		// Give each search its own shuffled order
 		form.addEventListener('submit', function(){
 			let shuffleInput = form.querySelector('input[name="shuffle"]');

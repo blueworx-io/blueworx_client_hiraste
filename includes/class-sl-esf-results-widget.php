@@ -250,14 +250,10 @@ class SL_ESF_Results_Widget extends Widget_Base {
 			'ignore_sticky_posts' => true,
 		];
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public search query, sanitized before use.
-		if ( isset( $_GET['s'] ) && ! is_array( $_GET['s'] ) ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public search query, sanitized before use.
-			$search_term = sanitize_text_field( wp_unslash( $_GET['s'] ) );
-			if ( $search_term !== '' ) {
-				$args['s'] = $search_term;
-				$args['search_columns'] = [ 'post_title' ];
-			}
+		$search_text = function_exists( 'sl_esf_get_search_text' ) ? sl_esf_get_search_text() : '';
+		if ( $search_text !== '' ) {
+			$text_ids = sl_esf_find_text_matching_property_ids( $search_text );
+			$args['post__in'] = ! empty( $text_ids ) ? $text_ids : [ 0 ];
 		}
 
 		$tax_query = $this->get_tax_query( $search_request );
@@ -275,6 +271,10 @@ class SL_ESF_Results_Widget extends Widget_Base {
 			$matching_ids = function_exists( 'sl_esf_find_matching_property_ids' )
 				? sl_esf_find_matching_property_ids( $requirements, $min_units, $guests )
 				: [];
+
+			if ( isset( $args['post__in'] ) ) {
+				$matching_ids = array_values( array_intersect( $args['post__in'], $matching_ids ) );
+			}
 
 			$args['post__in'] = ! empty( $matching_ids ) ? $matching_ids : [ 0 ];
 		}
